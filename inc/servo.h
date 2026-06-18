@@ -4,8 +4,10 @@
 
 #include <stdio.h>
 
+#include "pca9685.h"
 
-int pca9685_init();
-void pca9685_move_legs_synchronized(int servos);
+Pca9685Device pca9685_init();
+void pca9685_move_legs_synchronized(Pca9685Device *servos);
+bool servo_set_pulse_microseconds(Pca9685Device *servos, int channel, int pulse_microsec);
 
 #endif /* SERVO_H_ */

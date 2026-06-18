@@ -1,5 +1,7 @@
 #include "pigpio.h"
 
+#include "pca9685.h"
+
 #include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
@@ -12,13 +14,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-
-#define DEFAULT_I2C_BUS     1
-#define DEFAULT_PCA9685_ADDR 0x40
-
-#define MODE1               0x00
-#define MODE2               0x01
-#define PRESCALE            0xFE
 
 struct Options
 {
@@ -47,8 +42,8 @@ static bool parse_int(const char *value, int *parsed)
 
 static bool parse_args(int argc, char **argv, Options *options)
 {
-    options->i2c_bus = DEFAULT_I2C_BUS;
-    options->i2c_addr = DEFAULT_PCA9685_ADDR;
+    options->i2c_bus = PCA9685_DEFAULT_I2C_BUS;
+    options->i2c_addr = PCA9685_DEFAULT_ADDRESS;
     options->skip_camera = false;
 
     for (int i = 1; i < argc; i++)
@@ -241,9 +236,9 @@ static bool run_pca9685_check(const Options &options)
         return false;
     }
 
-    int mode1 = i2cReadByteData(handle, MODE1);
-    int mode2 = i2cReadByteData(handle, MODE2);
-    int prescale = i2cReadByteData(handle, PRESCALE);
+    int mode1 = i2cReadByteData(handle, PCA9685_MODE1);
+    int mode2 = i2cReadByteData(handle, PCA9685_MODE2);
+    int prescale = i2cReadByteData(handle, PCA9685_PRESCALE);
 
     if (mode1 < 0 || mode2 < 0 || prescale < 0)
     {
