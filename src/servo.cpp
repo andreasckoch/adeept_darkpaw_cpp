@@ -1,5 +1,7 @@
 #include "pigpio.h"
 
+#include <unistd.h>
+
 #include "servo.h"
 #include "utils.h"
 
@@ -63,53 +65,63 @@ int pca9685_init()
     gpioInit = gpioInitialise();
     printf("gpio custom port: %d\n", gpioCustomPort);
     printf("gpioInit: %d\n", gpioInit);
-    if (gpioInit >= 0)
+    if (gpioInit < 0)
     {
-
-        int servos;
-        servos = i2cOpen(1, PCA9685_ADDR, 0);
-        printf("Servos: %d\n", servos);
-
-        printf("Mode: %d\n", i2cReadByteData(servos, MODE1));
-
-        /* Setting the PCA9685 frequency, must be 50Hz for the SG-90 servos */
-        float prescale;
-        int oldmode;
-        int newmode;
-
-        prescale = (OSC_CLK / (RESOLUTION * FREQ)) - 0.5; /* now 25*10^6 is 25Mhz of the internal clock, 4096 is 12 bit resolution and 50hz is the wanted frequency setup) */
-        _prescale = (int)prescale;   // round = typecast and addition of 0.5 --> -0.5 instead of -1
-
-
-        /* Setup of I2C interface for the device */
-        i2cWriteByteData(servos, MODE2, OUTDRV);            /* set mode 2 OUTDRV=1, everything else to 0 */
-        i2cWriteByteData(servos, MODE1, ALLCALL);           /* set mode 1 ALLCALL=1 */
-        usleep(5000);                                       /* let oscillator catch up */
-        int mode1 = i2cReadByteData(servos, MODE1);
-        mode1 = mode1 &~ SLEEP;                             /* wake up */
-        i2cWriteByteData(servos, MODE1, mode1);
-        usleep(5000);
-
-        /* now there is a whole sequence to set up the frequency (frequency can only be set in sleep mode) */
-        oldmode = i2cReadByteData(servos, MODE1); /* getting current mode */
-        newmode = (oldmode & 0x7F) | SLEEP;       /* sleep mode definition 0x10 = 0000 1000 (with first bit 0 -> & 0x7F) --> set bit 7 to 0 (restart), bit 4 to 1 (sleep) and leave the rest */
-        i2cWriteByteData(servos, MODE1, newmode); /* going to sleep now */
-        i2cWriteByteData(servos, PRESCALE, _prescale);    /* setting up the frequency now 0xFE = 1111 1110 (prescaler register) */
-        i2cWriteByteData(servos, MODE1, oldmode); /* coming back to the old mode */
-        usleep(5000);
-        i2cWriteByteData(servos, MODE1, oldmode | RESTART); /* final step on frequency set up 0x80 = 1000 0000 */
-
-        return servos;
-    }
-    else
-    {
-        printf("Error: GPIO not initialized");
+        printf("Error: GPIO not initialized (%d)\n", gpioInit);
         return gpioInit;
     }
+
+    int servos;
+    servos = i2cOpen(1, PCA9685_ADDR, 0);
+    printf("Servos: %d\n", servos);
+    if (servos < 0)
+    {
+        printf("Error: PCA9685 I2C open failed on bus 1 at address 0x%02X (%d)\n", PCA9685_ADDR, servos);
+        printf("Check that /dev/i2c-1 exists and that i2cdetect -y 1 shows device 0x%02X.\n", PCA9685_ADDR);
+        gpioTerminate();
+        return servos;
+    }
+
+    printf("Mode: %d\n", i2cReadByteData(servos, MODE1));
+
+    /* Setting the PCA9685 frequency, must be 50Hz for the SG-90 servos */
+    float prescale;
+    int oldmode;
+    int newmode;
+
+    prescale = (OSC_CLK / (RESOLUTION * FREQ)) - 0.5; /* now 25*10^6 is 25Mhz of the internal clock, 4096 is 12 bit resolution and 50hz is the wanted frequency setup) */
+    _prescale = (int)prescale;   // round = typecast and addition of 0.5 --> -0.5 instead of -1
+
+
+    /* Setup of I2C interface for the device */
+    i2cWriteByteData(servos, MODE2, OUTDRV);            /* set mode 2 OUTDRV=1, everything else to 0 */
+    i2cWriteByteData(servos, MODE1, ALLCALL);           /* set mode 1 ALLCALL=1 */
+    usleep(5000);                                       /* let oscillator catch up */
+    int mode1 = i2cReadByteData(servos, MODE1);
+    mode1 = mode1 &~ SLEEP;                             /* wake up */
+    i2cWriteByteData(servos, MODE1, mode1);
+    usleep(5000);
+
+    /* now there is a whole sequence to set up the frequency (frequency can only be set in sleep mode) */
+    oldmode = i2cReadByteData(servos, MODE1); /* getting current mode */
+    newmode = (oldmode & 0x7F) | SLEEP;       /* sleep mode definition 0x10 = 0000 1000 (with first bit 0 -> & 0x7F) --> set bit 7 to 0 (restart), bit 4 to 1 (sleep) and leave the rest */
+    i2cWriteByteData(servos, MODE1, newmode); /* going to sleep now */
+    i2cWriteByteData(servos, PRESCALE, _prescale);    /* setting up the frequency now 0xFE = 1111 1110 (prescaler register) */
+    i2cWriteByteData(servos, MODE1, oldmode); /* coming back to the old mode */
+    usleep(5000);
+    i2cWriteByteData(servos, MODE1, oldmode | RESTART); /* final step on frequency set up 0x80 = 1000 0000 */
+
+    return servos;
 }
 
 void pca9685_move_legs_synchronized(int servos)
 {
+    if (servos < 0)
+    {
+        printf("Error: invalid servo I2C handle (%d); refusing to move legs.\n", servos);
+        return;
+    }
+
     /* 
     *   (leg 1 - front left)
     *   - servo 0:
