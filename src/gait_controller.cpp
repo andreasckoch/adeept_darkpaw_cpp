@@ -66,6 +66,16 @@ static GaitMode select_mode(const MotionCommand *command)
 
 static float normalized_servo_intent(int channel, const MotionCommand *command, const MotionCommandLimits *limits)
 {
+    /*
+     * Placeholder dry-run phase weights.
+     *
+     * These values are not measured from the robot, looked up from a gait
+     * reference, or derived from inverse kinematics. They only provide a
+     * deterministic, bounded signal so the dry-run command pipeline can be
+     * tested end to end without moving hardware. Replace them with calibrated
+     * geometry, a real gait generator, or simulator-derived values before using
+     * this path for actual walking.
+     */
     static const float stride_phase[SERVO_COUNT] = {
          1.0f,  0.7f, -0.7f,
         -1.0f, -0.7f,  0.7f,
