@@ -8,12 +8,6 @@ set(GCC_COVERAGE_LINK_FLAGS "")
 include(CTest)
 enable_testing()
 
-include_directories(
-    /opt/vc/include 
-    /opt/vc/include/interface/vcos/pthreads 
-    inc
-)
-link_directories(/opt/vc/lib)
 set(SOURCES 
     src/main.cpp 
     src/servo.cpp 
@@ -23,9 +17,11 @@ set(SOURCES
     )
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-target_link_libraries(${PROJECT_NAME} bcm_host pigpio)
+target_include_directories(${PROJECT_NAME} PRIVATE inc)
+target_link_libraries(${PROJECT_NAME} pigpio)
 
 add_executable(spider_diagnostics src/diagnostics.cpp)
+target_include_directories(spider_diagnostics PRIVATE inc)
 target_link_libraries(spider_diagnostics pigpio)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")

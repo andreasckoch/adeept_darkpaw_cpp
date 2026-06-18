@@ -3,7 +3,6 @@
 
 
 #include <stdio.h>
-#include "bcm_host.h"
 
 
 int pca9685_init();
