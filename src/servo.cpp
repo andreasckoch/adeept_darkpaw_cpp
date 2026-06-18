@@ -1,5 +1,7 @@
 #include "pigpio.h"
 
+#include <unistd.h>
+
 #include "servo.h"
 #include "utils.h"
 
