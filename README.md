@@ -33,14 +33,6 @@ cmake ..
 make
 ```
 
-## Tests
-
-Pure conversion and calibration tests do not require robot hardware:
-
-```bash
-ctest --test-dir build --output-on-failure
-```
-
 ## Hardware diagnostics
 
 Before running any motion code, run the read-only diagnostics executable:
@@ -58,8 +50,28 @@ sudo ./spider_diagnostics --skip-camera
 
 The diagnostics command checks pigpio initialization, available I2C devices, read-only PCA9685 registers, camera detection tooling, and prints a servo power checklist. It does not command servos.
 
+## Gait dry run
+
+Use the dry-run gait command to inspect bounded high-level velocity intent without opening pigpio, I2C, or commanding servos:
+
+```bash
+./spider_gait_dry_run --vx 0.05 --vy 0.0 --yaw 0.2
+```
+
+The command prints the raw command, bounded command, selected gait mode, and 12 intended servo pulse/tick targets.
+
+## Tests
+
+Pure conversion, calibration, command-bounding, and dry-run gait tests do not require robot hardware:
+
+```bash
+ctest --test-dir build --output-on-failure
+```
+
 ## Code structure
 
 - `pca9685`: low-level pigpio/I2C access, PCA9685 register writes, PWM frequency setup, and pulse-width conversion helpers.
 - `servo_calibration`: per-servo pulse limits and clamping.
+- `motion_command`: high-level velocity/yaw command validation, deadzone handling, and clamping.
+- `gait_controller`: hardware-free dry-run gait target generation from bounded commands.
 - `servo`: current gait prototype and safe servo pulse API built on top of the PCA9685 HAL and calibration layer.
