@@ -1,6 +1,6 @@
 {
   "name": "diagonal_a_lift",
-  "description": "Lift the first diagonal pair from neutral. Unvalidated seed pose for slow hand-designed gait tests.",
+  "description": "Lift the first diagonal pair from neutral.",
   "servos": [
     { "channel": 0, "pulse_microsec": 1040 },
     { "channel": 1, "pulse_microsec": 380 },
