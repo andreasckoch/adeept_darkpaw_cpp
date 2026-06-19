@@ -113,6 +113,13 @@ scripts/run_gait_on_robot.sh examples/gaits/slow_forward_creep.json
 scripts/run_gait_on_robot.sh examples/gaits/slow_forward_creep.json --execute
 ```
 
+To test a single pose, use the pose runner. It generates a temporary `neutral_stand -> <pose> -> neutral_stand` gait and compiles the CSV into `data/gaits`:
+
+```bash
+scripts/run_pose_on_robot.sh --pose examples/poses/diagonal_a_lift.json
+scripts/run_pose_on_robot.sh --pose diagonal_a_lift --execute
+```
+
 Pose files live in `examples/poses` and contain exactly 12 servo channels. The seeded Darkpaw poses are conservative unvalidated starting points based on the repository calibration limits and public 12-servo Darkpaw context; they are not measured kinematic solutions. Short excerpt:
 
 ```json

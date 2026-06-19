@@ -15,8 +15,9 @@ Before treating any seeded gait as real walking behavior:
 
 1. Lift or support the robot so legs can move without loading the frame.
 2. Run `scripts/run_gait_on_robot.sh examples/gaits/hold_neutral.json --execute`.
-3. Confirm every channel maps to the expected physical joint.
-4. Record corrected neutral and lift/advance/retract poses as new JSON files.
-5. Recompile into `data/gaits` and replay at low speed before testing on the floor.
+3. Use `scripts/run_pose_on_robot.sh --pose <pose-name> --execute` for slow isolated pose checks.
+4. Confirm every channel maps to the expected physical joint.
+5. Record corrected neutral and lift/advance/retract poses as new JSON files.
+6. Recompile into `data/gaits` and replay at low speed before testing on the floor.
 
 If a channel moves the wrong joint or direction, update the pose JSON rather than compensating in the player. The player should remain a simple, bounded trajectory executor.
