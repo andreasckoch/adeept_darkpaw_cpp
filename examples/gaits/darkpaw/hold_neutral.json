@@ -1,7 +1,0 @@
-{
-  "name": "hold_neutral",
-  "description": "Hold the neutral seed pose. Safe first compile/replay example; still requires manual hardware judgement before execution.",
-  "phases": [
-    { "name": "hold", "from": "neutral_stand", "to": "neutral_stand", "duration_ms": 1200, "steps": 12 }
-  ]
-}

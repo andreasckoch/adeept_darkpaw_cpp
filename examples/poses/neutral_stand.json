@@ -1,6 +1,6 @@
 {
   "name": "neutral_stand",
-  "description": "Conservative neutral standing pose for dry-run compilation only.",
+  "description": "Conservative seed neutral stand for Adeept Darkpaw. Unvalidated on hardware; derived from repository calibration midpoints and public Darkpaw 12-servo context.",
   "servos": [
     { "channel": 0, "pulse_microsec": 1040 },
     { "channel": 1, "pulse_microsec": 940 },

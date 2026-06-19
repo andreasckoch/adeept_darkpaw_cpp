@@ -66,8 +66,8 @@ Validate the example neutral hold gait:
 
 ```bash
 ./build/spider_validate_gait \
-  --gait examples/gaits/darkpaw/hold_neutral.json \
-  --poses examples/poses/darkpaw
+  --gait examples/gaits/hold_neutral.json \
+  --poses examples/poses
 ```
 
 Compile it to the dedicated generated-gait directory:
@@ -75,8 +75,8 @@ Compile it to the dedicated generated-gait directory:
 ```bash
 mkdir -p data/gaits
 ./build/spider_compile_gait \
-  --gait examples/gaits/darkpaw/slow_forward_creep.json \
-  --poses examples/poses/darkpaw \
+  --gait examples/gaits/slow_forward_creep.json \
+  --poses examples/poses \
   --output data/gaits/slow_forward_creep.csv \
   --max-delta-us 80
 ```
@@ -109,11 +109,11 @@ sudo ./build/spider_play_gait \
 The wrapper script performs the validate, compile, text replay, and optional hardware play sequence:
 
 ```bash
-scripts/run_gait_on_robot.sh examples/gaits/darkpaw/slow_forward_creep.json
-scripts/run_gait_on_robot.sh examples/gaits/darkpaw/slow_forward_creep.json --execute
+scripts/run_gait_on_robot.sh examples/gaits/slow_forward_creep.json
+scripts/run_gait_on_robot.sh examples/gaits/slow_forward_creep.json --execute
 ```
 
-Pose files live in `examples/poses/darkpaw` and contain exactly 12 servo channels. The seeded Darkpaw poses are conservative unvalidated starting points based on the repository calibration limits and public 12-servo Darkpaw context; they are not measured kinematic solutions. Short excerpt:
+Pose files live in `examples/poses` and contain exactly 12 servo channels. The seeded Darkpaw poses are conservative unvalidated starting points based on the repository calibration limits and public 12-servo Darkpaw context; they are not measured kinematic solutions. Short excerpt:
 
 ```json
 {
@@ -125,7 +125,7 @@ Pose files live in `examples/poses/darkpaw` and contain exactly 12 servo channel
 }
 ```
 
-Gait files live in `examples/gaits/darkpaw` and reference pose names. A phase interpolates from one pose to another over `duration_ms` and `steps`:
+Gait files live in `examples/gaits` and reference pose names. A phase interpolates from one pose to another over `duration_ms` and `steps`:
 
 ```json
 {

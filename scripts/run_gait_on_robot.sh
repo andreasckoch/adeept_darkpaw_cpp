@@ -7,7 +7,7 @@ Usage: scripts/run_gait_on_robot.sh GAIT.json [options]
 
 Options:
   --execute           Actually command the PCA9685 via spider_play_gait.
-  --poses DIR         Pose directory. Default: examples/poses/darkpaw
+  --poses DIR         Pose directory. Default: examples/poses
   --output-dir DIR    Compiled CSV directory. Default: data/gaits
   --build-dir DIR     Build directory. Default: build
   --speed SCALE       Playback speed scale, 0 < SCALE <= 1. Default: 0.10
@@ -27,7 +27,7 @@ fi
 gait_path="$1"
 shift
 
-poses_dir="examples/poses/darkpaw"
+poses_dir="examples/poses"
 output_dir="data/gaits"
 build_dir="build"
 speed="0.10"

@@ -1,6 +1,6 @@
 # Darkpaw Gait Seed Values
 
-The example pose and gait files under `examples/poses/darkpaw` and `examples/gaits/darkpaw` are conservative seed data for slow manual testing. They are not a measured Adeept Darkpaw kinematic model.
+The example pose and gait files under `examples/poses` and `examples/gaits` are conservative seed data for slow manual testing. They are not a measured Adeept Darkpaw kinematic model.
 
 Public Adeept Darkpaw material is useful for confirming the overall platform context: Raspberry Pi robot, Robot HAT/PCA9685-style servo control, and 12 servo channels. It does not provide a complete, trustworthy channel-to-joint map, link geometry, neutral pose, or calibrated gait table for this C++ repository.
 
@@ -14,7 +14,7 @@ For that reason, the seeded values are derived from:
 Before treating any seeded gait as real walking behavior:
 
 1. Lift or support the robot so legs can move without loading the frame.
-2. Run `scripts/run_gait_on_robot.sh examples/gaits/darkpaw/hold_neutral.json --execute`.
+2. Run `scripts/run_gait_on_robot.sh examples/gaits/hold_neutral.json --execute`.
 3. Confirm every channel maps to the expected physical joint.
 4. Record corrected neutral and lift/advance/retract poses as new JSON files.
 5. Recompile into `data/gaits` and replay at low speed before testing on the floor.
