@@ -60,9 +60,71 @@ Use the dry-run gait command to inspect bounded high-level velocity intent witho
 
 The command prints the raw command, bounded command, selected gait mode, and 12 intended servo pulse/tick targets.
 
+## Hand-designed gait authoring
+
+Hand-designed gaits are authored as JSON poses and JSON gait definitions, then compiled into CSV trajectories. These tools are hardware-free: they do not read actual servo position, open pigpio, use I2C, or command servos.
+
+Validate the example neutral hold gait:
+
+```bash
+./spider_validate_gait --gait examples/gaits/hold_neutral.json --poses examples/poses
+```
+
+Compile it to a timestamped pulse/tick trajectory:
+
+```bash
+./spider_compile_gait \
+  --gait examples/gaits/hold_neutral.json \
+  --poses examples/poses \
+  --output build/hold_neutral.csv
+```
+
+Replay the compiled CSV as text:
+
+```bash
+./spider_replay_gait --trajectory build/hold_neutral.csv
+```
+
+Pose files live in `examples/poses` and contain exactly 12 servo channels. Short excerpt:
+
+```json
+{
+  "name": "neutral_stand",
+  "description": "Conservative neutral standing pose.",
+  "servos": [
+    { "channel": 0, "pulse_microsec": 1040 }
+  ]
+}
+```
+
+Gait files live in `examples/gaits` and reference pose names. A phase interpolates from one pose to another over `duration_ms` and `steps`:
+
+```json
+{
+  "name": "hold_neutral",
+  "description": "Hold the neutral pose.",
+  "phases": [
+    {
+      "name": "hold",
+      "from": "neutral_stand",
+      "to": "neutral_stand",
+      "duration_ms": 1000,
+      "steps": 10
+    }
+  ]
+}
+```
+
+The compiler output is CSV:
+
+```csv
+timestamp_ms,phase,step,channel,pulse_microsec,ticks
+0,hold,0,0,1040,212
+```
+
 ## Tests
 
-Pure conversion, calibration, command-bounding, and dry-run gait tests do not require robot hardware:
+Pure conversion, calibration, command-bounding, dry-run gait, and gait authoring tests do not require robot hardware:
 
 ```bash
 ctest --test-dir build --output-on-failure
@@ -74,4 +136,5 @@ ctest --test-dir build --output-on-failure
 - `servo_calibration`: per-servo pulse limits and clamping.
 - `motion_command`: high-level velocity/yaw command validation, deadzone handling, and clamping.
 - `gait_controller`: hardware-free dry-run gait target generation from bounded commands.
+- `gait_pose`, `gait_definition`, `gait_trajectory`: hardware-free JSON pose/gait authoring, validation, CSV trajectory compilation, and replay support.
 - `servo`: current gait prototype and safe servo pulse API built on top of the PCA9685 HAL and calibration layer.
