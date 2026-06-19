@@ -34,11 +34,37 @@ set(DRY_RUN_SOURCES
     src/servo_calibration.cpp
 )
 
+set(GAIT_AUTHORING_SOURCES
+    src/gait_json.cpp
+    src/gait_pose.cpp
+    src/gait_definition.cpp
+    src/gait_trajectory.cpp
+    src/servo_calibration.cpp
+)
+
 add_executable(spider_gait_dry_run
     src/gait_dry_run_main.cpp
     ${DRY_RUN_SOURCES}
 )
 target_include_directories(spider_gait_dry_run PRIVATE inc)
+
+add_executable(spider_validate_gait
+    src/gait_validate_main.cpp
+    ${GAIT_AUTHORING_SOURCES}
+)
+target_include_directories(spider_validate_gait PRIVATE inc)
+
+add_executable(spider_compile_gait
+    src/gait_compile_main.cpp
+    ${GAIT_AUTHORING_SOURCES}
+)
+target_include_directories(spider_compile_gait PRIVATE inc)
+
+add_executable(spider_replay_gait
+    src/gait_replay_main.cpp
+    ${GAIT_AUTHORING_SOURCES}
+)
+target_include_directories(spider_replay_gait PRIVATE inc)
 
 add_executable(test_servo_math
     tests/test_servo_math.cpp
@@ -60,6 +86,13 @@ add_executable(test_gait_controller
 )
 target_include_directories(test_gait_controller PRIVATE inc)
 add_test(NAME gait_controller COMMAND test_gait_controller)
+
+add_executable(test_gait_authoring
+    tests/test_gait_authoring.cpp
+    ${GAIT_AUTHORING_SOURCES}
+)
+target_include_directories(test_gait_authoring PRIVATE inc)
+add_test(NAME gait_authoring COMMAND test_gait_authoring)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
