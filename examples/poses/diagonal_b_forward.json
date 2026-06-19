@@ -1,17 +1,17 @@
 {
   "name": "diagonal_b_forward",
-  "description": "Advance the second lifted diagonal pair while the opposite pair holds support.",
+  "description": "Advance the second lifted diagonal pair using configured servo limit endpoints.",
   "servos": [
-    { "channel": 0, "pulse_microsec": 1000 },
+    { "channel": 0, "pulse_microsec": 380 },
     { "channel": 1, "pulse_microsec": 940 },
     { "channel": 2, "pulse_microsec": 940 },
-    { "channel": 3, "pulse_microsec": 1120 },
-    { "channel": 4, "pulse_microsec": 830 },
-    { "channel": 5, "pulse_microsec": 940 },
-    { "channel": 6, "pulse_microsec": 810 },
-    { "channel": 7, "pulse_microsec": 880 },
-    { "channel": 8, "pulse_microsec": 1040 },
-    { "channel": 9, "pulse_microsec": 1180 },
+    { "channel": 3, "pulse_microsec": 1700 },
+    { "channel": 4, "pulse_microsec": 380 },
+    { "channel": 5, "pulse_microsec": 500 },
+    { "channel": 6, "pulse_microsec": 380 },
+    { "channel": 7, "pulse_microsec": 380 },
+    { "channel": 8, "pulse_microsec": 550 },
+    { "channel": 9, "pulse_microsec": 1900 },
     { "channel": 10, "pulse_microsec": 1075 },
     { "channel": 11, "pulse_microsec": 1550 }
   ]

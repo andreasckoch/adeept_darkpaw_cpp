@@ -8,7 +8,7 @@ For that reason, the seeded values are derived from:
 
 - The repository's current per-servo pulse limits in `src/actuation/servo_calibration.cpp`.
 - A neutral pose near the center of those limits.
-- Small pulse offsets that keep every frame inside calibration bounds and below the default playback delta limit.
+- Non-neutral poses that exercise configured min/max endpoints while gait interpolation keeps each frame below the default playback delta limit.
 - Diagonal-pair phase patterns intended to support slow lifted tests before floor contact tests.
 
 Before treating any seeded gait as real walking behavior:
