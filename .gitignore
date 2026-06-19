@@ -1,3 +1,5 @@
 .vscode/
 build/
 AGENTS.md
+data/gaits/*.csv
+!data/gaits/.gitkeep

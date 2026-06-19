@@ -27,10 +27,8 @@ The PCA9685 should usually appear at address `0x40`.
 ## Build
 
 ```bash
-mkdir -p build
-cd build
-cmake ..
-make
+cmake -S . -B build
+cmake --build build
 ```
 
 ## Hardware diagnostics
@@ -38,14 +36,14 @@ make
 Before running any motion code, run the read-only diagnostics executable:
 
 ```bash
-sudo ./spider_diagnostics
+sudo ./build/spider_diagnostics
 ```
 
 Useful options:
 
 ```bash
-sudo ./spider_diagnostics --i2c-bus 1 --address 0x40
-sudo ./spider_diagnostics --skip-camera
+sudo ./build/spider_diagnostics --i2c-bus 1 --address 0x40
+sudo ./build/spider_diagnostics --skip-camera
 ```
 
 The diagnostics command checks pigpio initialization, available I2C devices, read-only PCA9685 registers, camera detection tooling, and prints a servo power checklist. It does not command servos.
@@ -55,37 +53,67 @@ The diagnostics command checks pigpio initialization, available I2C devices, rea
 Use the dry-run gait command to inspect bounded high-level velocity intent without opening pigpio, I2C, or commanding servos:
 
 ```bash
-./spider_gait_dry_run --vx 0.05 --vy 0.0 --yaw 0.2
+./build/spider_gait_dry_run --vx 0.05 --vy 0.0 --yaw 0.2
 ```
 
 The command prints the raw command, bounded command, selected gait mode, and 12 intended servo pulse/tick targets.
 
 ## Hand-designed gait authoring
 
-Hand-designed gaits are authored as JSON poses and JSON gait definitions, then compiled into CSV trajectories. These tools are hardware-free: they do not read actual servo position, open pigpio, use I2C, or command servos.
+Hand-designed gaits are authored as JSON poses and JSON gait definitions, then compiled into CSV trajectories. Validation, compilation, and replay are hardware-free: they do not read actual servo position, open pigpio, use I2C, or command servos.
 
 Validate the example neutral hold gait:
 
 ```bash
-./spider_validate_gait --gait examples/gaits/hold_neutral.json --poses examples/poses
+./build/spider_validate_gait \
+  --gait examples/gaits/darkpaw/hold_neutral.json \
+  --poses examples/poses/darkpaw
 ```
 
-Compile it to a timestamped pulse/tick trajectory:
+Compile it to the dedicated generated-gait directory:
 
 ```bash
-./spider_compile_gait \
-  --gait examples/gaits/hold_neutral.json \
-  --poses examples/poses \
-  --output build/hold_neutral.csv
+mkdir -p data/gaits
+./build/spider_compile_gait \
+  --gait examples/gaits/darkpaw/slow_forward_creep.json \
+  --poses examples/poses/darkpaw \
+  --output data/gaits/slow_forward_creep.csv \
+  --max-delta-us 80
 ```
 
 Replay the compiled CSV as text:
 
 ```bash
-./spider_replay_gait --trajectory build/hold_neutral.csv
+./build/spider_replay_gait --trajectory data/gaits/slow_forward_creep.csv --max-delta-us 80
 ```
 
-Pose files live in `examples/poses` and contain exactly 12 servo channels. Short excerpt:
+The hardware player is dry-run by default:
+
+```bash
+./build/spider_play_gait \
+  --trajectory data/gaits/slow_forward_creep.csv \
+  --speed 0.10 \
+  --max-delta-us 80
+```
+
+To intentionally move the robot on the Raspberry Pi, keep the robot lifted or supported, keep power reachable, and add `--execute`:
+
+```bash
+sudo ./build/spider_play_gait \
+  --trajectory data/gaits/slow_forward_creep.csv \
+  --speed 0.10 \
+  --max-delta-us 80 \
+  --execute
+```
+
+The wrapper script performs the validate, compile, text replay, and optional hardware play sequence:
+
+```bash
+scripts/run_gait_on_robot.sh examples/gaits/darkpaw/slow_forward_creep.json
+scripts/run_gait_on_robot.sh examples/gaits/darkpaw/slow_forward_creep.json --execute
+```
+
+Pose files live in `examples/poses/darkpaw` and contain exactly 12 servo channels. The seeded Darkpaw poses are conservative unvalidated starting points based on the repository calibration limits and public 12-servo Darkpaw context; they are not measured kinematic solutions. Short excerpt:
 
 ```json
 {
@@ -97,7 +125,7 @@ Pose files live in `examples/poses` and contain exactly 12 servo channels. Short
 }
 ```
 
-Gait files live in `examples/gaits` and reference pose names. A phase interpolates from one pose to another over `duration_ms` and `steps`:
+Gait files live in `examples/gaits/darkpaw` and reference pose names. A phase interpolates from one pose to another over `duration_ms` and `steps`:
 
 ```json
 {
@@ -132,9 +160,8 @@ ctest --test-dir build --output-on-failure
 
 ## Code structure
 
-- `pca9685`: low-level pigpio/I2C access, PCA9685 register writes, PWM frequency setup, and pulse-width conversion helpers.
-- `servo_calibration`: per-servo pulse limits and clamping.
-- `motion_command`: high-level velocity/yaw command validation, deadzone handling, and clamping.
-- `gait_controller`: hardware-free dry-run gait target generation from bounded commands.
-- `gait_pose`, `gait_definition`, `gait_trajectory`: hardware-free JSON pose/gait authoring, validation, CSV trajectory compilation, and replay support.
-- `servo`: current gait prototype and safe servo pulse API built on top of the PCA9685 HAL and calibration layer.
+- `src/hal`: low-level pigpio/I2C access, PCA9685 register writes, PWM frequency setup, and pulse-width conversion helpers.
+- `src/actuation`: per-servo pulse limits, clamping, and the current servo pulse API built on top of the PCA9685 HAL.
+- `src/gait`: hardware-free motion commands, dry-run gait target generation, JSON pose/gait authoring, validation, CSV trajectory compilation, and replay support.
+- `src/tools`: executable entry points for diagnostics, dry-run gait, gait authoring, playback, and the current spider robot prototype.
+- `src/common`: shared small utilities.
