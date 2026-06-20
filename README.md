@@ -120,6 +120,21 @@ scripts/run_pose_on_robot.sh --pose examples/poses/diagonal_a_lift.json
 scripts/run_pose_on_robot.sh --pose diagonal_a_lift --execute
 ```
 
+To diagnose one disconnected or unloaded actuator, use the single-channel test. It
+defaults to channel 5 and writes only the selected PCA9685 channel. It starts with
+a conservative excursion covering 25% of the calibrated range on either side of
+centre; increase `--range-percent` only after verifying the horn and linkage are
+clear. Dry-run first, then explicitly execute on the Pi:
+
+```bash
+scripts/test_servo_on_robot.sh
+scripts/test_servo_on_robot.sh --execute
+```
+
+The test moves centre -> low -> centre -> high -> centre in 25 us increments. The
+servo remains commanded at centre after completion, so turn off servo power before
+changing wiring or removing the horn.
+
 Pose files live in `examples/poses` and contain exactly 12 servo channels. The seeded Darkpaw poses are conservative unvalidated starting points based on the repository calibration limits and public 12-servo Darkpaw context; they are not measured kinematic solutions. Short excerpt:
 
 ```json

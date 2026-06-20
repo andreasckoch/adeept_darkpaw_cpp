@@ -8,7 +8,7 @@
     { "channel": 3, "pulse_microsec": 1700 },
     { "channel": 4, "pulse_microsec": 890 },
     { "channel": 5, "pulse_microsec": 1000 },
-    { "channel": 6, "pulse_microsec": 380 },
+    { "channel": 6, "pulse_microsec": 500 },
     { "channel": 7, "pulse_microsec": 940 },
     { "channel": 8, "pulse_microsec": 1100 },
     { "channel": 9, "pulse_microsec": 1900 },

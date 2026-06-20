@@ -28,7 +28,7 @@
       "from": "diagonal_a_forward_place",
       "to": "diagonal_b_lift_a_backward",
       "duration_ms": 300,
-      "steps": 12
+      "steps": 19
     },
     {
       "name": "b_advance",
@@ -49,7 +49,7 @@
       "from": "diagonal_b_forward_place_a_backward",
       "to": "diagonal_a_lift_b_backward",
       "duration_ms": 400,
-      "steps": 16
+      "steps": 19
     },
     {
       "name": "a_forward_b_backward_2",
