@@ -5,57 +5,237 @@
     {
       "name": "front_left",
       "joints": [
-        { "axis": "fore_aft", "channel": 0, "positions": [
-          { "name": "back", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 1040 }, { "name": "front", "pulse_microsec": 2800 }
-        ] },
-        { "axis": "lift", "channel": 1, "positions": [
-          { "name": "down", "pulse_microsec": 2800 }, { "name": "neutral", "pulse_microsec": 940 }, { "name": "up", "pulse_microsec": 380 }
-        ] },
-        { "axis": "stance", "channel": 2, "positions": [
-          { "name": "close", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 940 }, { "name": "wide", "pulse_microsec": 1800 }
-        ] }
-      ]
-    },
-    {
-      "name": "front_right",
-      "joints": [
-        { "axis": "fore_aft", "channel": 3, "positions": [
-          { "name": "back", "pulse_microsec": 2100 }, { "name": "neutral", "pulse_microsec": 1040 }, { "name": "front", "pulse_microsec": 380 }
-        ] },
-        { "axis": "lift", "channel": 4, "positions": [
-          { "name": "down", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 890 }, { "name": "up", "pulse_microsec": 1800 }
-        ] },
-        { "axis": "stance", "channel": 5, "positions": [
-          { "name": "close", "pulse_microsec": 1800 }, { "name": "neutral", "pulse_microsec": 1000 }, { "name": "wide", "pulse_microsec": 380 }
-        ] }
+        {
+          "axis": "fore_aft",
+          "channel": 0,
+          "positions": [
+            {
+              "name": "back",
+              "pulse_microsec": 380
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1000
+            },
+            {
+              "name": "front",
+              "pulse_microsec": 1600
+            }
+          ]
+        },
+        {
+          "axis": "lift",
+          "channel": 1,
+          "positions": [
+            {
+              "name": "down",
+              "pulse_microsec": 2800
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 2000
+            },
+            {
+              "name": "up",
+              "pulse_microsec": 1200
+            }
+          ]
+        },
+        {
+          "axis": "stance",
+          "channel": 2,
+          "positions": [
+            {
+              "name": "close",
+              "pulse_microsec": 1500
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 940
+            },
+            {
+              "name": "wide",
+              "pulse_microsec": 380
+            }
+          ]
+        }
       ]
     },
     {
       "name": "rear_left",
       "joints": [
-        { "axis": "fore_aft", "channel": 6, "positions": [
-          { "name": "back", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 950 }, { "name": "front", "pulse_microsec": 2800 }
-        ] },
-        { "axis": "lift", "channel": 7, "positions": [
-          { "name": "down", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 940 }, { "name": "up", "pulse_microsec": 2500 }
-        ] },
-        { "axis": "stance", "channel": 8, "positions": [
-          { "name": "close", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 1100 }, { "name": "wide", "pulse_microsec": 1800 }
-        ] }
+        {
+          "axis": "fore_aft",
+          "channel": 3,
+          "positions": [
+            {
+              "name": "back",
+              "pulse_microsec": 380
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1100
+            },
+            {
+              "name": "front",
+              "pulse_microsec": 1800
+            }
+          ]
+        },
+        {
+          "axis": "lift",
+          "channel": 4,
+          "positions": [
+            {
+              "name": "down",
+              "pulse_microsec": 380
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1000
+            },
+            {
+              "name": "up",
+              "pulse_microsec": 1600
+            }
+          ]
+        },
+        {
+          "axis": "stance",
+          "channel": 5,
+          "positions": [
+            {
+              "name": "close",
+              "pulse_microsec": 380
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1100
+            },
+            {
+              "name": "wide",
+              "pulse_microsec": 1800
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "front_right",
+      "joints": [
+        {
+          "axis": "fore_aft",
+          "channel": 6,
+          "positions": [
+            {
+              "name": "back",
+              "pulse_microsec": 2800
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 2200
+            },
+            {
+              "name": "front",
+              "pulse_microsec": 1580
+            }
+          ]
+        },
+        {
+          "axis": "lift",
+          "channel": 7,
+          "positions": [
+            {
+              "name": "down",
+              "pulse_microsec": 380
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1200
+            },
+            {
+              "name": "up",
+              "pulse_microsec": 2000
+            }
+          ]
+        },
+        {
+          "axis": "stance",
+          "channel": 8,
+          "positions": [
+            {
+              "name": "close",
+              "pulse_microsec": 580
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1140
+            },
+            {
+              "name": "wide",
+              "pulse_microsec": 1700
+            }
+          ]
+        }
       ]
     },
     {
       "name": "rear_right",
       "joints": [
-        { "axis": "fore_aft", "channel": 9, "positions": [
-          { "name": "back", "pulse_microsec": 2100 }, { "name": "neutral", "pulse_microsec": 1140 }, { "name": "front", "pulse_microsec": 380 }
-        ] },
-        { "axis": "lift", "channel": 10, "positions": [
-          { "name": "down", "pulse_microsec": 1800 }, { "name": "neutral", "pulse_microsec": 1075 }, { "name": "up", "pulse_microsec": 380 }
-        ] },
-        { "axis": "stance", "channel": 11, "positions": [
-          { "name": "close", "pulse_microsec": 2000 }, { "name": "neutral", "pulse_microsec": 1550 }, { "name": "wide", "pulse_microsec": 380 }
-        ] }
+        {
+          "axis": "fore_aft",
+          "channel": 9,
+          "positions": [
+            {
+              "name": "back",
+              "pulse_microsec": 630
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1350
+            },
+            {
+              "name": "front",
+              "pulse_microsec": 2050
+            }
+          ]
+        },
+        {
+          "axis": "lift",
+          "channel": 10,
+          "positions": [
+            {
+              "name": "down",
+              "pulse_microsec": 1700
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1120
+            },
+            {
+              "name": "up",
+              "pulse_microsec": 480
+            }
+          ]
+        },
+        {
+          "axis": "stance",
+          "channel": 11,
+          "positions": [
+            {
+              "name": "close",
+              "pulse_microsec": 1900
+            },
+            {
+              "name": "neutral",
+              "pulse_microsec": 1220
+            },
+            {
+              "name": "wide",
+              "pulse_microsec": 480
+            }
+          ]
+        }
       ]
     }
   ]
