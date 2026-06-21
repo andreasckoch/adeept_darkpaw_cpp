@@ -1,0 +1,10 @@
+{
+  "name": "slow_rotate_left",
+  "description": "Conservative yaw-left seed gait alternating diagonal support.",
+  "phases": [
+    { "name": "a_turn", "from": "neutral_stand", "to": "rotate_left_a", "duration_ms": 1600, "steps": 16 },
+    { "name": "a_return", "from": "rotate_left_a", "to": "neutral_stand", "duration_ms": 1600, "steps": 16 },
+    { "name": "b_turn", "from": "neutral_stand", "to": "rotate_left_b", "duration_ms": 1600, "steps": 16 },
+    { "name": "b_return", "from": "rotate_left_b", "to": "neutral_stand", "duration_ms": 1600, "steps": 16 }
+  ]
+}

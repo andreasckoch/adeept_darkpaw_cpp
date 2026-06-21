@@ -1,0 +1,76 @@
+{
+  "name": "slow_forward_creep",
+  "description": "Conservative two-diagonal forward creep seed gait for lifted, slow robot tests.",
+  "phases": [
+    {
+      "name": "a_lift",
+      "from": "neutral_stand",
+      "to": "diagonal_a_lift",
+      "duration_ms": 300,
+      "steps": 12
+    },
+    {
+      "name": "a_advance",
+      "from": "diagonal_a_lift",
+      "to": "diagonal_a_forward",
+      "duration_ms": 400,
+      "steps": 16
+    },
+    {
+      "name": "a_place",
+      "from": "diagonal_a_forward",
+      "to": "diagonal_a_forward_place",
+      "duration_ms": 400,
+      "steps": 16
+    },
+    {
+      "name": "b_lift_a_backward",
+      "from": "diagonal_a_forward_place",
+      "to": "diagonal_b_lift_a_backward",
+      "duration_ms": 300,
+      "steps": 19
+    },
+    {
+      "name": "b_advance",
+      "from": "diagonal_b_lift_a_backward",
+      "to": "diagonal_b_forward_a_backward",
+      "duration_ms": 400,
+      "steps": 16
+    },
+    {
+      "name": "b_place",
+      "from": "diagonal_b_forward_a_backward",
+      "to": "diagonal_b_forward_place_a_backward",
+      "duration_ms": 400,
+      "steps": 16
+    },
+    {
+      "name": "a_lift_2",
+      "from": "diagonal_b_forward_place_a_backward",
+      "to": "diagonal_a_lift_b_backward",
+      "duration_ms": 400,
+      "steps": 19
+    },
+    {
+      "name": "a_forward_b_backward_2",
+      "from": "diagonal_a_lift_b_backward",
+      "to": "diagonal_a_forward_b_backward",
+      "duration_ms": 300,
+      "steps": 12
+    },
+    {
+      "name": "a_forward_place_b_backward_2",
+      "from": "diagonal_a_forward_b_backward",
+      "to": "diagonal_a_forward_place_b_backward",
+      "duration_ms": 400,
+      "steps": 16
+    },
+    {
+      "name": "back_to_neutral",
+      "from": "diagonal_a_forward_place_b_backward",
+      "to": "neutral_stand",
+      "duration_ms": 400,
+      "steps": 16
+    }
+  ]
+}

@@ -1,14 +1,14 @@
 {
-  "name": "neutral_stand",
-  "description": "Conservative seed neutral stand for Adeept Darkpaw. Unvalidated on hardware; derived from repository calibration midpoints and public Darkpaw 12-servo context.",
+  "name": "diagonal_b_forward",
+  "description": "Advance the second lifted diagonal pair using configured servo limit endpoints.",
   "servos": [
     { "channel": 0, "pulse_microsec": 1040 },
     { "channel": 1, "pulse_microsec": 940 },
     { "channel": 2, "pulse_microsec": 940 },
-    { "channel": 3, "pulse_microsec": 1040 },
+    { "channel": 3, "pulse_microsec": 380 },
     { "channel": 4, "pulse_microsec": 890 },
     { "channel": 5, "pulse_microsec": 1000 },
-    { "channel": 6, "pulse_microsec": 950 },
+    { "channel": 6, "pulse_microsec": 500 },
     { "channel": 7, "pulse_microsec": 940 },
     { "channel": 8, "pulse_microsec": 1100 },
     { "channel": 9, "pulse_microsec": 1140 },

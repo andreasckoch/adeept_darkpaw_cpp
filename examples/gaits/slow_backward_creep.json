@@ -1,0 +1,12 @@
+{
+  "name": "slow_backward_creep",
+  "description": "Conservative two-diagonal reverse creep seed gait for lifted, slow robot tests.",
+  "phases": [
+    { "name": "a_lift", "from": "neutral_stand", "to": "diagonal_a_lift", "duration_ms": 1200, "steps": 12 },
+    { "name": "a_retract", "from": "diagonal_a_lift", "to": "diagonal_a_backward", "duration_ms": 1600, "steps": 16 },
+    { "name": "a_place", "from": "diagonal_a_backward", "to": "neutral_stand", "duration_ms": 1600, "steps": 16 },
+    { "name": "b_lift", "from": "neutral_stand", "to": "diagonal_b_lift", "duration_ms": 1200, "steps": 12 },
+    { "name": "b_retract", "from": "diagonal_b_lift", "to": "diagonal_b_backward", "duration_ms": 1600, "steps": 16 },
+    { "name": "b_place", "from": "diagonal_b_backward", "to": "neutral_stand", "duration_ms": 1600, "steps": 16 }
+  ]
+}

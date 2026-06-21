@@ -8,74 +8,102 @@ set(GCC_COVERAGE_LINK_FLAGS "")
 include(CTest)
 enable_testing()
 
-set(SOURCES 
-    src/main.cpp 
-    src/servo.cpp 
-    src/pca9685.cpp
-    src/servo_calibration.cpp
-    src/utils.cpp 
+set(HAL_SOURCES
+    src/hal/pca9685.cpp
     inc/pca9685.h
-    inc/servo.h 
+)
+
+set(ACTUATION_SOURCES
+    src/actuation/servo.cpp
+    src/actuation/servo_calibration.cpp
+    inc/servo.h
     inc/servo_calibration.h
+)
+
+set(COMMON_SOURCES
+    src/common/utils.cpp
     inc/utils.h
-    )
+)
+
+set(SOURCES
+    src/tools/spider_robot_main.cpp
+    ${HAL_SOURCES}
+    ${ACTUATION_SOURCES}
+    ${COMMON_SOURCES}
+)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE inc)
 target_link_libraries(${PROJECT_NAME} pigpio)
 
-add_executable(spider_diagnostics src/diagnostics.cpp)
+add_executable(spider_diagnostics src/tools/diagnostics_main.cpp)
 target_include_directories(spider_diagnostics PRIVATE inc)
 target_link_libraries(spider_diagnostics pigpio)
 
 set(DRY_RUN_SOURCES
-    src/motion_command.cpp
-    src/gait_controller.cpp
-    src/servo_calibration.cpp
+    src/gait/motion_command.cpp
+    src/gait/gait_controller.cpp
+    src/actuation/servo_calibration.cpp
 )
 
 set(GAIT_AUTHORING_SOURCES
-    src/gait_json.cpp
-    src/gait_pose.cpp
-    src/gait_definition.cpp
-    src/gait_trajectory.cpp
-    src/servo_calibration.cpp
+    src/gait/gait_json.cpp
+    src/gait/gait_pose.cpp
+    src/gait/gait_definition.cpp
+    src/gait/gait_trajectory.cpp
+    src/actuation/servo_calibration.cpp
 )
 
 add_executable(spider_gait_dry_run
-    src/gait_dry_run_main.cpp
+    src/tools/gait_dry_run_main.cpp
     ${DRY_RUN_SOURCES}
 )
 target_include_directories(spider_gait_dry_run PRIVATE inc)
 
 add_executable(spider_validate_gait
-    src/gait_validate_main.cpp
+    src/tools/gait_validate_main.cpp
     ${GAIT_AUTHORING_SOURCES}
 )
 target_include_directories(spider_validate_gait PRIVATE inc)
 
 add_executable(spider_compile_gait
-    src/gait_compile_main.cpp
+    src/tools/gait_compile_main.cpp
     ${GAIT_AUTHORING_SOURCES}
 )
 target_include_directories(spider_compile_gait PRIVATE inc)
 
 add_executable(spider_replay_gait
-    src/gait_replay_main.cpp
+    src/tools/gait_replay_main.cpp
     ${GAIT_AUTHORING_SOURCES}
 )
 target_include_directories(spider_replay_gait PRIVATE inc)
 
+add_executable(spider_play_gait
+    src/tools/gait_play_main.cpp
+    ${GAIT_AUTHORING_SOURCES}
+    ${HAL_SOURCES}
+)
+target_include_directories(spider_play_gait PRIVATE inc)
+target_link_libraries(spider_play_gait pigpio)
+
+add_executable(spider_test_servo
+    src/tools/servo_test_main.cpp
+    src/actuation/servo_calibration.cpp
+    ${HAL_SOURCES}
+)
+target_include_directories(spider_test_servo PRIVATE inc)
+target_link_libraries(spider_test_servo pigpio)
+
 add_executable(test_servo_math
     tests/test_servo_math.cpp
-    src/servo_calibration.cpp
+    src/actuation/servo_calibration.cpp
 )
 target_include_directories(test_servo_math PRIVATE inc)
 add_test(NAME servo_math COMMAND test_servo_math)
 
 add_executable(test_motion_command
     tests/test_motion_command.cpp
-    src/motion_command.cpp
+    src/gait/motion_command.cpp
 )
 target_include_directories(test_motion_command PRIVATE inc)
 add_test(NAME motion_command COMMAND test_motion_command)
@@ -93,6 +121,14 @@ add_executable(test_gait_authoring
 )
 target_include_directories(test_gait_authoring PRIVATE inc)
 add_test(NAME gait_authoring COMMAND test_gait_authoring)
+
+add_executable(test_gait_examples
+    tests/test_gait_examples.cpp
+    ${GAIT_AUTHORING_SOURCES}
+)
+target_include_directories(test_gait_examples PRIVATE inc)
+target_compile_definitions(test_gait_examples PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+add_test(NAME gait_examples COMMAND test_gait_examples)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")

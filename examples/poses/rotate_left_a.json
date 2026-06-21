@@ -1,0 +1,18 @@
+{
+  "name": "rotate_left_a",
+  "description": "First yaw-left seed pose with one diagonal pair lifted to configured servo limits.",
+  "servos": [
+    { "channel": 0, "pulse_microsec": 1700 },
+    { "channel": 1, "pulse_microsec": 380 },
+    { "channel": 2, "pulse_microsec": 380 },
+    { "channel": 3, "pulse_microsec": 1700 },
+    { "channel": 4, "pulse_microsec": 890 },
+    { "channel": 5, "pulse_microsec": 1000 },
+    { "channel": 6, "pulse_microsec": 1400 },
+    { "channel": 7, "pulse_microsec": 940 },
+    { "channel": 8, "pulse_microsec": 1100 },
+    { "channel": 9, "pulse_microsec": 380 },
+    { "channel": 10, "pulse_microsec": 650 },
+    { "channel": 11, "pulse_microsec": 1000 }
+  ]
+}
