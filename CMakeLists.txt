@@ -135,6 +135,16 @@ add_executable(spider_test_servo
 target_include_directories(spider_test_servo PRIVATE inc)
 target_link_libraries(spider_test_servo pigpio)
 
+add_executable(spider_test_semantic_joint
+    src/tools/semantic_joint_test_main.cpp
+    src/gait/gait_json.cpp
+    src/actuation/semantic_profile.cpp
+    src/actuation/servo_calibration.cpp
+    ${HAL_SOURCES}
+)
+target_include_directories(spider_test_semantic_joint PRIVATE inc)
+target_link_libraries(spider_test_semantic_joint pigpio)
+
 add_executable(test_servo_math
     tests/test_servo_math.cpp
     src/actuation/servo_calibration.cpp

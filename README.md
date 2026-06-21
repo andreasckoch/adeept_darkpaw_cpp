@@ -76,6 +76,14 @@ Validate the profile and inspect a resolved pose without hardware access:
   --pose diagonal_a_lift
 ```
 
+Test one semantic joint's three recorded profile values while keeping every other
+PCA9685 channel untouched. This is dry-run by default:
+
+```bash
+scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift
+scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift --execute
+```
+
 Validate, compile, and dry-run a semantic gait:
 
 ```bash

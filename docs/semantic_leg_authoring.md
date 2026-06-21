@@ -27,6 +27,18 @@ Validate it without hardware access:
   --profile examples/semantic/darkpaw_profile.json
 ```
 
+Test the three values for a single named joint before using that joint in a gait:
+
+```bash
+scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift
+scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift --execute
+```
+
+The test moves `neutral -> down -> neutral -> up -> neutral` for `lift`,
+`neutral -> back -> neutral -> front -> neutral` for `fore_aft`, and the analogous
+`close/wide` sequence for `stance`. It writes only the resolved joint channel and
+returns to profile neutral. Keep the robot supported and servo power reachable.
+
 ## Poses
 
 A semantic pose targets named legs and joint states. A pose with `base` inherits
