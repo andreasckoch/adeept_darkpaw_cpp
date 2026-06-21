@@ -1,0 +1,8 @@
+{
+  "name": "diagonal_b_lift",
+  "description": "Lift front-right and rear-left together after the first diagonal is placed.",
+  "base": "diagonal_a_place",
+  "targets": [
+    { "legs": ["front_right", "rear_left"], "axis": "lift", "position": "up" }
+  ]
+}

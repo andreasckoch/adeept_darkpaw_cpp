@@ -23,7 +23,7 @@ static void test_seed_neutral_pose_loads()
 {
     GaitPose pose;
     std::string error;
-    assert(gait_pose_load_json(join_path(REPO_ROOT, "examples/poses/neutral_stand.json"),
+    assert(gait_pose_load_json(join_path(REPO_ROOT, "examples/poses_old/neutral_stand.json"),
                                &pose,
                                &error));
     assert(pose.name == "neutral_stand");
@@ -32,8 +32,8 @@ static void test_seed_neutral_pose_loads()
 static void test_seed_gait_compiles(const std::string &gait_file)
 {
     std::string root = REPO_ROOT;
-    std::string poses_dir = join_path(root, "examples/poses");
-    std::string gait_path = join_path(root, "examples/gaits/" + gait_file);
+    std::string poses_dir = join_path(root, "examples/poses_old");
+    std::string gait_path = join_path(root, "examples/gaits_old/" + gait_file);
 
     GaitDefinition definition;
     std::vector<GaitTrajectorySample> samples;

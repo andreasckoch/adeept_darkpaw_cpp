@@ -1,0 +1,14 @@
+{
+  "name": "slow_forward_creep",
+  "description": "Seed diagonal forward creep. Validate the profile body-frame directions while supported before floor testing.",
+  "initial_pose": "neutral_stand",
+  "phases": [
+    { "name": "a_lift", "pose": "diagonal_a_lift", "duration_ms": 1600, "steps": 32 },
+    { "name": "a_forward", "pose": "diagonal_a_forward", "duration_ms": 1800, "steps": 32 },
+    { "name": "a_place", "pose": "diagonal_a_place", "duration_ms": 1600, "steps": 32 },
+    { "name": "b_lift", "pose": "diagonal_b_lift", "duration_ms": 1600, "steps": 32 },
+    { "name": "b_forward", "pose": "diagonal_b_forward", "duration_ms": 1800, "steps": 32 },
+    { "name": "b_place", "pose": "diagonal_b_place", "duration_ms": 1600, "steps": 32 },
+    { "name": "neutral", "pose": "neutral_stand", "duration_ms": 1800, "steps": 32 }
+  ]
+}

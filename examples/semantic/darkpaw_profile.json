@@ -1,0 +1,62 @@
+{
+  "name": "darkpaw_semantic_seed",
+  "description": "Seed semantic mapping for the calibrated Darkpaw servos. Verify every named body-relative direction while the robot is supported before executing a gait.",
+  "legs": [
+    {
+      "name": "front_left",
+      "joints": [
+        { "axis": "fore_aft", "channel": 0, "positions": [
+          { "name": "back", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 1040 }, { "name": "front", "pulse_microsec": 2800 }
+        ] },
+        { "axis": "lift", "channel": 1, "positions": [
+          { "name": "down", "pulse_microsec": 2800 }, { "name": "neutral", "pulse_microsec": 940 }, { "name": "up", "pulse_microsec": 380 }
+        ] },
+        { "axis": "stance", "channel": 2, "positions": [
+          { "name": "close", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 940 }, { "name": "wide", "pulse_microsec": 1800 }
+        ] }
+      ]
+    },
+    {
+      "name": "front_right",
+      "joints": [
+        { "axis": "fore_aft", "channel": 3, "positions": [
+          { "name": "back", "pulse_microsec": 2100 }, { "name": "neutral", "pulse_microsec": 1040 }, { "name": "front", "pulse_microsec": 380 }
+        ] },
+        { "axis": "lift", "channel": 4, "positions": [
+          { "name": "down", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 890 }, { "name": "up", "pulse_microsec": 1800 }
+        ] },
+        { "axis": "stance", "channel": 5, "positions": [
+          { "name": "close", "pulse_microsec": 1800 }, { "name": "neutral", "pulse_microsec": 1000 }, { "name": "wide", "pulse_microsec": 380 }
+        ] }
+      ]
+    },
+    {
+      "name": "rear_left",
+      "joints": [
+        { "axis": "fore_aft", "channel": 6, "positions": [
+          { "name": "back", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 950 }, { "name": "front", "pulse_microsec": 2800 }
+        ] },
+        { "axis": "lift", "channel": 7, "positions": [
+          { "name": "down", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 940 }, { "name": "up", "pulse_microsec": 2500 }
+        ] },
+        { "axis": "stance", "channel": 8, "positions": [
+          { "name": "close", "pulse_microsec": 380 }, { "name": "neutral", "pulse_microsec": 1100 }, { "name": "wide", "pulse_microsec": 1800 }
+        ] }
+      ]
+    },
+    {
+      "name": "rear_right",
+      "joints": [
+        { "axis": "fore_aft", "channel": 9, "positions": [
+          { "name": "back", "pulse_microsec": 2100 }, { "name": "neutral", "pulse_microsec": 1140 }, { "name": "front", "pulse_microsec": 380 }
+        ] },
+        { "axis": "lift", "channel": 10, "positions": [
+          { "name": "down", "pulse_microsec": 1800 }, { "name": "neutral", "pulse_microsec": 1075 }, { "name": "up", "pulse_microsec": 380 }
+        ] },
+        { "axis": "stance", "channel": 11, "positions": [
+          { "name": "close", "pulse_microsec": 2000 }, { "name": "neutral", "pulse_microsec": 1550 }, { "name": "wide", "pulse_microsec": 380 }
+        ] }
+      ]
+    }
+  ]
+}

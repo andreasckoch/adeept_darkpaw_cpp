@@ -1,0 +1,9 @@
+{
+  "name": "neutral_stand",
+  "description": "Resolved neutral stand. This is the required base pose for the semantic seed examples.",
+  "targets": [
+    { "legs": ["front_left", "front_right", "rear_left", "rear_right"], "axis": "fore_aft", "position": "neutral" },
+    { "legs": ["front_left", "front_right", "rear_left", "rear_right"], "axis": "lift", "position": "neutral" },
+    { "legs": ["front_left", "front_right", "rear_left", "rear_right"], "axis": "stance", "position": "neutral" }
+  ]
+}
