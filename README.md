@@ -91,6 +91,13 @@ scripts/test_all_semantic_joints_on_robot.sh
 scripts/test_all_semantic_joints_on_robot.sh --execute
 ```
 
+For a coordinated full-robot profile check, use the generated movement sequence:
+
+```bash
+scripts/test_semantic_robot_movements_on_robot.sh
+scripts/test_semantic_robot_movements_on_robot.sh --execute
+```
+
 Validate, compile, and dry-run a semantic gait:
 
 ```bash

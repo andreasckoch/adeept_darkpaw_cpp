@@ -53,6 +53,18 @@ The script expects the standard `front_left`, `rear_left`, `front_right`, and
 `rear_right` leg names. Use the single-joint script for a profile with different
 leg naming.
 
+For a coordinated complete-robot check, run:
+
+```bash
+scripts/test_semantic_robot_movements_on_robot.sh
+scripts/test_semantic_robot_movements_on_robot.sh --execute
+```
+
+It generates a semantic gait that raises and lowers all legs together, exercises
+left/right stance targets through opposing `wide/close` leg pairs, then raises one
+leg at a time to sweep its `fore_aft` target from neutral through front and back.
+This is a profile and motion-path check, not proof of stable body translation.
+
 ## Poses
 
 A semantic pose targets named legs and joint states. A pose with `base` inherits
