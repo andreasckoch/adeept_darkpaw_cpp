@@ -8,14 +8,14 @@ Usage: scripts/test_semantic_robot_movements_on_robot.sh [options]
 Builds and runs a coordinated semantic test gait:
   a) all legs: neutral -> up -> neutral -> down -> neutral
   b) stance: neutral -> left -> neutral -> right -> neutral
-  c) each leg in turn: raise, neutral -> front -> neutral -> back -> neutral, lower
+  c) each leg in turn: counterbalance, raise, neutral -> front -> neutral -> back -> neutral, lower
 
 Options:
   --profile FILE      Semantic robot profile. Default: examples/semantic/darkpaw_profile.json
   --poses DIR         Semantic pose directory. Default: examples/semantic/poses
   --output-dir DIR    Compiled CSV directory. Default: data/gaits
   --build-dir DIR     Build directory. Default: build
-  --speed SCALE       Playback speed scale, 0 < SCALE <= 1. Default: 0.25
+  --speed SCALE       Playback speed scale, 0 < SCALE <= 1. Default: 0.40
   --max-delta-us N    Max allowed per-frame pulse delta. Default: 80
   --duration-ms N     Duration for each transition. Default: 800
   --steps N           Interpolation steps per transition. Default: 32
@@ -48,7 +48,7 @@ profile="examples/semantic/darkpaw_profile.json"
 poses_dir="examples/semantic/poses"
 output_dir="data/gaits"
 build_dir="build"
-speed="0.25"
+speed="0.40"
 max_delta_us="80"
 duration_ms="800"
 steps="32"
@@ -140,12 +140,34 @@ GAIT_HEADER
   write_phase "stance_neutral_again" '{ "legs": ["front_left", "rear_left", "front_right", "rear_right"], "axis": "stance", "position": "neutral" }'
 
   for leg in front_left rear_left front_right rear_right; do
+    case "$leg" in
+      front_left)
+        counterbalance_leg="rear_left"
+        support_leg="front_right"
+        ;;
+      rear_left)
+        counterbalance_leg="front_left"
+        support_leg="rear_right"
+        ;;
+      front_right)
+        counterbalance_leg="rear_right"
+        support_leg="front_left"
+        ;;
+      rear_right)
+        counterbalance_leg="front_right"
+        support_leg="rear_left"
+        ;;
+    esac
+
+    write_phase "${leg}_counterbalance_raise" "{ \"legs\": [\"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"up\" }"
+    write_phase "${leg}_support_down" "{ \"legs\": [\"${support_leg}\", \"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"down\" }"
     write_phase "${leg}_raise" "{ \"legs\": [\"${leg}\"], \"axis\": \"lift\", \"position\": \"up\" }"
     write_phase "${leg}_front" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"front\" }"
     write_phase "${leg}_fore_aft_neutral" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"neutral\" }"
     write_phase "${leg}_back" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"back\" }"
     write_phase "${leg}_fore_aft_neutral_again" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"neutral\" }"
     write_phase "${leg}_lower" "{ \"legs\": [\"${leg}\"], \"axis\": \"lift\", \"position\": \"neutral\" }"
+    write_phase "${leg}_support_neutral" "{ \"legs\": [\"${support_leg}\", \"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"neutral\" }"
   done
 
   cat <<'GAIT_FOOTER'

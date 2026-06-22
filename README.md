@@ -98,6 +98,10 @@ scripts/test_semantic_robot_movements_on_robot.sh
 scripts/test_semantic_robot_movements_on_robot.sh --execute
 ```
 
+Its individual-leg sequence uses the opposite front/rear leg and a support pair
+before lifting the target leg; it remains a scripted profile check, not a
+closed-loop balance controller.
+
 Validate, compile, and dry-run a semantic gait:
 
 ```bash
