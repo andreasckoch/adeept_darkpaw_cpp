@@ -30,7 +30,7 @@ shift
 poses_dir="examples/poses_old"
 output_dir="data/gaits"
 build_dir="build"
-speed="0.10"
+speed="0.30"
 max_delta_us="140"
 i2c_bus="1"
 address="0x40"

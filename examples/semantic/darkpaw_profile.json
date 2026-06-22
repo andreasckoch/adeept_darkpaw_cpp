@@ -70,15 +70,15 @@
           "positions": [
             {
               "name": "back",
-              "pulse_microsec": 380
+              "pulse_microsec": 1800
             },
             {
               "name": "neutral",
-              "pulse_microsec": 1100
+              "pulse_microsec": 1120
             },
             {
               "name": "front",
-              "pulse_microsec": 1800
+              "pulse_microsec": 380
             }
           ]
         },
