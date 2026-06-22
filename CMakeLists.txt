@@ -54,6 +54,17 @@ set(GAIT_AUTHORING_SOURCES
     src/actuation/servo_calibration.cpp
 )
 
+set(SEMANTIC_AUTHORING_SOURCES
+    src/gait/gait_json.cpp
+    src/gait/gait_definition.cpp
+    src/gait/gait_pose.cpp
+    src/gait/gait_trajectory.cpp
+    src/gait/semantic_pose.cpp
+    src/gait/semantic_gait.cpp
+    src/actuation/semantic_profile.cpp
+    src/actuation/servo_calibration.cpp
+)
+
 add_executable(spider_gait_dry_run
     src/tools/gait_dry_run_main.cpp
     ${DRY_RUN_SOURCES}
@@ -86,6 +97,36 @@ add_executable(spider_play_gait
 target_include_directories(spider_play_gait PRIVATE inc)
 target_link_libraries(spider_play_gait pigpio)
 
+add_executable(spider_validate_semantic_profile
+    src/tools/semantic_profile_validate_main.cpp
+    src/gait/gait_json.cpp
+    src/actuation/semantic_profile.cpp
+    src/actuation/servo_calibration.cpp
+)
+target_include_directories(spider_validate_semantic_profile PRIVATE inc)
+
+add_executable(spider_print_semantic_pose
+    src/tools/semantic_pose_print_main.cpp
+    src/gait/gait_json.cpp
+    src/gait/gait_pose.cpp
+    src/gait/semantic_pose.cpp
+    src/actuation/semantic_profile.cpp
+    src/actuation/servo_calibration.cpp
+)
+target_include_directories(spider_print_semantic_pose PRIVATE inc)
+
+add_executable(spider_validate_semantic_gait
+    src/tools/semantic_gait_validate_main.cpp
+    ${SEMANTIC_AUTHORING_SOURCES}
+)
+target_include_directories(spider_validate_semantic_gait PRIVATE inc)
+
+add_executable(spider_compile_semantic_gait
+    src/tools/semantic_gait_compile_main.cpp
+    ${SEMANTIC_AUTHORING_SOURCES}
+)
+target_include_directories(spider_compile_semantic_gait PRIVATE inc)
+
 add_executable(spider_test_servo
     src/tools/servo_test_main.cpp
     src/actuation/servo_calibration.cpp
@@ -93,6 +134,16 @@ add_executable(spider_test_servo
 )
 target_include_directories(spider_test_servo PRIVATE inc)
 target_link_libraries(spider_test_servo pigpio)
+
+add_executable(spider_test_semantic_joint
+    src/tools/semantic_joint_test_main.cpp
+    src/gait/gait_json.cpp
+    src/actuation/semantic_profile.cpp
+    src/actuation/servo_calibration.cpp
+    ${HAL_SOURCES}
+)
+target_include_directories(spider_test_semantic_joint PRIVATE inc)
+target_link_libraries(spider_test_semantic_joint pigpio)
 
 add_executable(test_servo_math
     tests/test_servo_math.cpp
@@ -129,6 +180,14 @@ add_executable(test_gait_examples
 target_include_directories(test_gait_examples PRIVATE inc)
 target_compile_definitions(test_gait_examples PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
 add_test(NAME gait_examples COMMAND test_gait_examples)
+
+add_executable(test_semantic_authoring
+    tests/test_semantic_authoring.cpp
+    ${SEMANTIC_AUTHORING_SOURCES}
+)
+target_include_directories(test_semantic_authoring PRIVATE inc)
+target_compile_definitions(test_semantic_authoring PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+add_test(NAME semantic_authoring COMMAND test_semantic_authoring)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")

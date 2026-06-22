@@ -30,11 +30,12 @@ static bool load_pose_by_name(const std::string &poses_dir, const std::string &p
     return gait_pose_load_json(join_path(poses_dir, pose_name + ".json"), pose, error);
 }
 
-static bool validate_phase_delta(const GaitPose &from_pose,
-                                 const GaitPose &to_pose,
-                                 const GaitPhaseDefinition &phase,
-                                 int max_delta_microsec,
-                                 std::string *error)
+static bool validate_transition_delta(const GaitPose &from_pose,
+                                      const GaitPose &to_pose,
+                                      const std::string &phase_name,
+                                      int steps,
+                                      int max_delta_microsec,
+                                      std::string *error)
 {
     if (max_delta_microsec <= 0)
     {
@@ -44,17 +45,17 @@ static bool validate_phase_delta(const GaitPose &from_pose,
     for (int channel = 0; channel < SERVO_COUNT; channel++)
     {
         int last_pulse = from_pose.pulse_microsec[channel];
-        for (int step = 1; step <= phase.steps; step++)
+        for (int step = 1; step <= steps; step++)
         {
             int pulse = interpolate_int(from_pose.pulse_microsec[channel],
                                         to_pose.pulse_microsec[channel],
                                         step,
-                                        phase.steps);
+                                        steps);
             int delta = pulse > last_pulse ? pulse - last_pulse : last_pulse - pulse;
             if (delta > max_delta_microsec)
             {
                 std::stringstream message;
-                message << "phase '" << phase.name << "' channel " << channel
+                message << "phase '" << phase_name << "' channel " << channel
                         << " changes by " << delta << " us in one step; limit is "
                         << max_delta_microsec << " us";
                 if (error != 0) { *error = message.str(); }
@@ -64,6 +65,49 @@ static bool validate_phase_delta(const GaitPose &from_pose,
         }
     }
 
+    return true;
+}
+
+bool gait_append_pose_transition(const GaitPose &from_pose,
+                                 const GaitPose &to_pose,
+                                 const std::string &phase_name,
+                                 int duration_ms,
+                                 int steps,
+                                 int start_ms,
+                                 int max_delta_microsec,
+                                 std::vector<GaitTrajectorySample> *samples,
+                                 std::string *error)
+{
+    if (samples == 0 || phase_name.empty() || duration_ms <= 0 || steps <= 0 || start_ms < 0)
+    {
+        if (error != 0) { *error = "invalid pose transition parameters"; }
+        return false;
+    }
+    if (!gait_pose_validate(from_pose, error) || !gait_pose_validate(to_pose, error) ||
+        !validate_transition_delta(from_pose, to_pose, phase_name, steps, max_delta_microsec, error))
+    {
+        return false;
+    }
+
+    for (int step = 0; step <= steps; step++)
+    {
+        int timestamp_ms = start_ms + ((duration_ms * step) / steps);
+        for (int channel = 0; channel < SERVO_COUNT; channel++)
+        {
+            int pulse = interpolate_int(from_pose.pulse_microsec[channel],
+                                        to_pose.pulse_microsec[channel],
+                                        step,
+                                        steps);
+            GaitTrajectorySample sample;
+            sample.timestamp_ms = timestamp_ms;
+            sample.phase = phase_name;
+            sample.step = step;
+            sample.channel = channel;
+            sample.pulse_microsec = pulse;
+            sample.ticks = pca9685_pulse_microseconds_to_ticks(pulse);
+            samples->push_back(sample);
+        }
+    }
     return true;
 }
 
@@ -100,39 +144,17 @@ bool gait_compile_trajectory(const GaitDefinition &definition,
         {
             return false;
         }
-        if (!validate_phase_delta(from_pose, to_pose, phase, max_delta_microsec, error))
+        if (!gait_append_pose_transition(from_pose,
+                                         to_pose,
+                                         phase.name,
+                                         phase.duration_ms,
+                                         phase.steps,
+                                         phase_start_ms,
+                                         max_delta_microsec,
+                                         samples,
+                                         error))
         {
             return false;
-        }
-
-        for (int step = 0; step <= phase.steps; step++)
-        {
-            int timestamp_ms = phase_start_ms + ((phase.duration_ms * step) / phase.steps);
-            for (int channel = 0; channel < SERVO_COUNT; channel++)
-            {
-                int pulse = interpolate_int(from_pose.pulse_microsec[channel],
-                                            to_pose.pulse_microsec[channel],
-                                            step,
-                                            phase.steps);
-                int clamped = servo_clamp_pulse_microseconds(channel, pulse);
-                if (clamped != pulse)
-                {
-                    std::stringstream message;
-                    message << "compiled phase '" << phase.name << "' channel " << channel
-                            << " generated out-of-range pulse " << pulse;
-                    if (error != 0) { *error = message.str(); }
-                    return false;
-                }
-
-                GaitTrajectorySample sample;
-                sample.timestamp_ms = timestamp_ms;
-                sample.phase = phase.name;
-                sample.step = step;
-                sample.channel = channel;
-                sample.pulse_microsec = pulse;
-                sample.ticks = pca9685_pulse_microseconds_to_ticks(pulse);
-                samples->push_back(sample);
-            }
         }
 
         phase_start_ms += phase.duration_ms;

@@ -1,0 +1,11 @@
+{
+  "name": "slow_rotate_left",
+  "description": "Seed left rotation using opposing body-frame fore-aft targets. Verify on a supported robot first.",
+  "initial_pose": "neutral_stand",
+  "phases": [
+    { "name": "left_pair_lift", "targets": [ { "legs": ["front_left", "rear_left"], "axis": "lift", "position": "up" } ], "duration_ms": 80, "steps": 32 },
+    { "name": "left_pair_swing", "targets": [ { "legs": ["front_left", "rear_left"], "axis": "fore_aft", "position": "back" }, { "legs": ["front_right", "rear_right"], "axis": "fore_aft", "position": "front" } ], "duration_ms": 100, "steps": 32 },
+    { "name": "left_pair_place", "targets": [ { "legs": ["front_left", "rear_left"], "axis": "lift", "position": "neutral" } ], "duration_ms": 80, "steps": 32 },
+    { "name": "neutral", "pose": "neutral_stand", "duration_ms": 100, "steps": 32 }
+  ]
+}

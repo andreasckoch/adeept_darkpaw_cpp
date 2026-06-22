@@ -1,0 +1,8 @@
+{
+  "name": "front_left_lift",
+  "description": "Isolated semantic lift of the front-left leg for supported dry-run inspection.",
+  "base": "neutral_stand",
+  "targets": [
+    { "legs": ["front_left"], "axis": "lift", "position": "up" }
+  ]
+}

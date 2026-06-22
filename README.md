@@ -58,7 +58,67 @@ Use the dry-run gait command to inspect bounded high-level velocity intent witho
 
 The command prints the raw command, bounded command, selected gait mode, and 12 intended servo pulse/tick targets.
 
-## Hand-designed gait authoring
+## Semantic gait authoring
+
+Semantic authoring is the primary path for new poses and gaits. The robot profile
+is the only place that records per-servo pulse values. Poses and gaits instead use
+body-relative leg names and semantic joint states such as `front`, `up`, and `wide`.
+The compiler resolves them into the existing 12-channel bounded CSV format.
+
+Validate the profile and inspect a resolved pose without hardware access:
+
+```bash
+./build/spider_validate_semantic_profile \
+  --profile examples/semantic/darkpaw_profile.json
+./build/spider_print_semantic_pose \
+  --profile examples/semantic/darkpaw_profile.json \
+  --poses examples/semantic/poses \
+  --pose diagonal_a_lift
+```
+
+Test one semantic joint's three recorded profile values while keeping every other
+PCA9685 channel untouched. This is dry-run by default:
+
+```bash
+scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift
+scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift --execute
+```
+
+After reassembly, quickly exercise all 12 standard Darkpaw joints sequentially:
+
+```bash
+scripts/test_all_semantic_joints_on_robot.sh
+scripts/test_all_semantic_joints_on_robot.sh --execute
+```
+
+For a coordinated full-robot profile check, use the generated movement sequence:
+
+```bash
+scripts/test_semantic_robot_movements_on_robot.sh
+scripts/test_semantic_robot_movements_on_robot.sh --execute
+```
+
+Its individual-leg sequence uses the opposite front/rear leg and a support pair
+before lifting the target leg; it remains a scripted profile check, not a
+closed-loop balance controller.
+
+Validate, compile, and dry-run a semantic gait:
+
+```bash
+scripts/run_semantic_gait_on_robot.sh examples/semantic/gaits/slow_forward_creep.json
+```
+
+The command is dry-run by default. After validating every profile direction while
+the robot is supported, actual hardware execution remains explicit:
+
+```bash
+scripts/run_semantic_gait_on_robot.sh examples/semantic/gaits/slow_forward_creep.json --execute
+```
+
+See [semantic leg authoring](docs/semantic_leg_authoring.md) for the profile,
+pose, and gait JSON schemas and the calibration workflow.
+
+## Legacy Raw Gait Authoring
 
 Hand-designed gaits are authored as JSON poses and JSON gait definitions, then compiled into CSV trajectories. Validation, compilation, and replay are hardware-free: they do not read actual servo position, open pigpio, use I2C, or command servos.
 
@@ -66,8 +126,8 @@ Validate the example neutral hold gait:
 
 ```bash
 ./build/spider_validate_gait \
-  --gait examples/gaits/hold_neutral.json \
-  --poses examples/poses
+  --gait examples/gaits_old/hold_neutral.json \
+  --poses examples/poses_old
 ```
 
 Compile it to the dedicated generated-gait directory:
@@ -75,8 +135,8 @@ Compile it to the dedicated generated-gait directory:
 ```bash
 mkdir -p data/gaits
 ./build/spider_compile_gait \
-  --gait examples/gaits/slow_forward_creep.json \
-  --poses examples/poses \
+  --gait examples/gaits_old/slow_forward_creep.json \
+  --poses examples/poses_old \
   --output data/gaits/slow_forward_creep.csv \
   --max-delta-us 80
 ```
@@ -109,14 +169,14 @@ sudo ./build/spider_play_gait \
 The wrapper script performs the validate, compile, text replay, and optional hardware play sequence:
 
 ```bash
-scripts/run_gait_on_robot.sh examples/gaits/slow_forward_creep.json
-scripts/run_gait_on_robot.sh examples/gaits/slow_forward_creep.json --execute
+scripts/run_gait_on_robot.sh examples/gaits_old/slow_forward_creep.json
+scripts/run_gait_on_robot.sh examples/gaits_old/slow_forward_creep.json --execute
 ```
 
 To test a single pose, use the pose runner. It generates a temporary `neutral_stand -> <pose> -> neutral_stand` gait and compiles the CSV into `data/gaits`:
 
 ```bash
-scripts/run_pose_on_robot.sh --pose examples/poses/diagonal_a_lift.json
+scripts/run_pose_on_robot.sh --pose examples/poses_old/diagonal_a_lift.json
 scripts/run_pose_on_robot.sh --pose diagonal_a_lift --execute
 ```
 
@@ -135,7 +195,7 @@ The test moves centre -> low -> centre -> high -> centre in 25 us increments. Th
 servo remains commanded at centre after completion, so turn off servo power before
 changing wiring or removing the horn.
 
-Pose files live in `examples/poses` and contain exactly 12 servo channels. The seeded Darkpaw poses are conservative unvalidated starting points based on the repository calibration limits and public 12-servo Darkpaw context; they are not measured kinematic solutions. Short excerpt:
+Legacy pose files live in `examples/poses_old` and contain exactly 12 servo channels. They are retained for comparison and regression tests; new work should use the semantic profile and authoring files. Short excerpt:
 
 ```json
 {
@@ -147,7 +207,7 @@ Pose files live in `examples/poses` and contain exactly 12 servo channels. The s
 }
 ```
 
-Gait files live in `examples/gaits` and reference pose names. A phase interpolates from one pose to another over `duration_ms` and `steps`:
+Legacy gait files live in `examples/gaits_old` and reference raw pose names. A phase interpolates from one pose to another over `duration_ms` and `steps`:
 
 ```json
 {
@@ -183,7 +243,7 @@ ctest --test-dir build --output-on-failure
 ## Code structure
 
 - `src/hal`: low-level pigpio/I2C access, PCA9685 register writes, PWM frequency setup, and pulse-width conversion helpers.
-- `src/actuation`: per-servo pulse limits, clamping, and the current servo pulse API built on top of the PCA9685 HAL.
-- `src/gait`: hardware-free motion commands, dry-run gait target generation, JSON pose/gait authoring, validation, CSV trajectory compilation, and replay support.
-- `src/tools`: executable entry points for diagnostics, dry-run gait, gait authoring, playback, and the current spider robot prototype.
+- `src/actuation`: per-servo pulse limits, semantic leg-profile mapping, clamping, and the current servo pulse API built on top of the PCA9685 HAL.
+- `src/gait`: hardware-free motion commands, raw and semantic JSON authoring, semantic pose resolution, validation, CSV trajectory compilation, and replay support.
+- `src/tools`: executable entry points for diagnostics, dry-run gait, semantic profile/pose/gait tooling, playback, and the current spider robot prototype.
 - `src/common`: shared small utilities.

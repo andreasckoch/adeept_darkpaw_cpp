@@ -1,0 +1,8 @@
+{
+  "name": "diagonal_b_place",
+  "description": "Return the second diagonal lift joints to neutral after its forward semantic target.",
+  "base": "diagonal_b_forward",
+  "targets": [
+    { "legs": ["front_right", "rear_left"], "axis": "lift", "position": "neutral" }
+  ]
+}
