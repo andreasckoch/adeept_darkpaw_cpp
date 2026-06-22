@@ -48,10 +48,10 @@ profile="examples/semantic/darkpaw_profile.json"
 poses_dir="examples/semantic/poses"
 output_dir="data/gaits"
 build_dir="build"
-speed="0.40"
-max_delta_us="80"
-duration_ms="800"
-steps="32"
+speed="1.00"
+max_delta_us="160"
+duration_ms="50"
+steps="16"
 i2c_bus="1"
 address="0x40"
 execute="0"
@@ -142,32 +142,38 @@ GAIT_HEADER
   for leg in front_left rear_left front_right rear_right; do
     case "$leg" in
       front_left)
-        counterbalance_leg="rear_left"
-        support_leg="front_right"
+        counterbalance_leg="rear_right"
+        support_leg_1="front_right"
+        support_leg_2="rear_left"
         ;;
       rear_left)
-        counterbalance_leg="front_left"
-        support_leg="rear_right"
+        counterbalance_leg="front_right"
+        support_leg_1="rear_right"
+        support_leg_2="front_left"
         ;;
       front_right)
-        counterbalance_leg="rear_right"
-        support_leg="front_left"
+        counterbalance_leg="rear_left"
+        support_leg_1="front_left"
+        support_leg_2="rear_right"
         ;;
       rear_right)
-        counterbalance_leg="front_right"
-        support_leg="rear_left"
+        counterbalance_leg="front_left"
+        support_leg_1="rear_left"
+        support_leg_2="front_right"
         ;;
     esac
 
-    write_phase "${leg}_counterbalance_raise" "{ \"legs\": [\"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"up\" }"
-    write_phase "${leg}_support_down" "{ \"legs\": [\"${support_leg}\", \"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"down\" }"
+    cmd_string="{ \"legs\": [\"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"up\" }"
+    cmd_string="${cmd_string}, { \"legs\": [\"${support_leg_1}\", \"${support_leg_2}\"], \"axis\": \"lift\", \"position\": \"down\" }"
+    cmd_string="${cmd_string}, { \"legs\": [\"${leg}\"], \"axis\": \"lift\", \"position\": \"down\" }"
+    write_phase "${leg}_lower_counterbalance_raise_support_down" "${cmd_string}"
     write_phase "${leg}_raise" "{ \"legs\": [\"${leg}\"], \"axis\": \"lift\", \"position\": \"up\" }"
     write_phase "${leg}_front" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"front\" }"
     write_phase "${leg}_fore_aft_neutral" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"neutral\" }"
     write_phase "${leg}_back" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"back\" }"
     write_phase "${leg}_fore_aft_neutral_again" "{ \"legs\": [\"${leg}\"], \"axis\": \"fore_aft\", \"position\": \"neutral\" }"
     write_phase "${leg}_lower" "{ \"legs\": [\"${leg}\"], \"axis\": \"lift\", \"position\": \"neutral\" }"
-    write_phase "${leg}_support_neutral" "{ \"legs\": [\"${support_leg}\", \"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"neutral\" }"
+    write_phase "${leg}_support_neutral" "{ \"legs\": [\"${support_leg_1}\", \"${support_leg_2}\", \"${counterbalance_leg}\"], \"axis\": \"lift\", \"position\": \"neutral\" }"
   done
 
   cat <<'GAIT_FOOTER'
