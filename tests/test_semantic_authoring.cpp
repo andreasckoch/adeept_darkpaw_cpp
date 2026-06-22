@@ -34,14 +34,20 @@ static void test_seed_profile_and_pose_resolution()
     std::string error;
     GaitPose neutral;
     assert(semantic_pose_resolve(profile, poses_dir, "neutral_stand", &neutral, &error));
-    assert(neutral.pulse_microsec[0] == 1040);
-    assert(neutral.pulse_microsec[11] == 1550);
+
+    int channel = -1;
+    int pulse = 0;
+    assert(semantic_profile_get_pulse(profile, "front_left", "fore_aft", "neutral", &channel, &pulse, &error));
+    assert(neutral.pulse_microsec[channel] == pulse);
+    assert(semantic_profile_get_pulse(profile, "rear_right", "stance", "neutral", &channel, &pulse, &error));
+    assert(neutral.pulse_microsec[channel] == pulse);
 
     GaitPose lifted;
     assert(semantic_pose_resolve(profile, poses_dir, "front_left_lift", &lifted, &error));
-    assert(lifted.pulse_microsec[1] == 380);
-    assert(lifted.pulse_microsec[4] == neutral.pulse_microsec[4]);
-    assert(lifted.pulse_microsec[10] == neutral.pulse_microsec[10]);
+    assert(semantic_profile_get_pulse(profile, "front_left", "lift", "up", &channel, &pulse, &error));
+    assert(lifted.pulse_microsec[channel] == pulse);
+    assert(semantic_profile_get_pulse(profile, "rear_left", "lift", "neutral", &channel, &pulse, &error));
+    assert(lifted.pulse_microsec[channel] == neutral.pulse_microsec[channel]);
 }
 
 static void test_invalid_semantic_target_fails()

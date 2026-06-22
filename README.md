@@ -84,6 +84,13 @@ scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift
 scripts/test_semantic_joint_on_robot.sh --leg front_left --axis lift --execute
 ```
 
+After reassembly, quickly exercise all 12 standard Darkpaw joints sequentially:
+
+```bash
+scripts/test_all_semantic_joints_on_robot.sh
+scripts/test_all_semantic_joints_on_robot.sh --execute
+```
+
 Validate, compile, and dry-run a semantic gait:
 
 ```bash

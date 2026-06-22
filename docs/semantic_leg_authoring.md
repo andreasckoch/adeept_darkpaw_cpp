@@ -39,6 +39,20 @@ The test moves `neutral -> down -> neutral -> up -> neutral` for `lift`,
 `close/wide` sequence for `stance`. It writes only the resolved joint channel and
 returns to profile neutral. Keep the robot supported and servo power reachable.
 
+After reassembly, the all-joint test runs the four standard Darkpaw legs and three
+semantic axes serially. Its default 100 us steps, 20 ms step delay, and 250 ms
+settle time keep each joint test well below one third of the single-joint tester's
+default duration while still commanding both profile endpoints:
+
+```bash
+scripts/test_all_semantic_joints_on_robot.sh
+scripts/test_all_semantic_joints_on_robot.sh --execute
+```
+
+The script expects the standard `front_left`, `rear_left`, `front_right`, and
+`rear_right` leg names. Use the single-joint script for a profile with different
+leg naming.
+
 ## Poses
 
 A semantic pose targets named legs and joint states. A pose with `base` inherits
