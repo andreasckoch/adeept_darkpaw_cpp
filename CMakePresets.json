@@ -1,0 +1,86 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "host",
+      "displayName": "Host tools",
+      "description": "Configure portable host-side tools and tests without Raspberry Pi pigpio targets.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-host",
+      "cacheVariables": {
+        "SPIDER_BUILD_HOST_TOOLS": "ON",
+        "SPIDER_BUILD_PI_TARGETS": "OFF",
+        "BUILD_TESTING": "ON"
+      }
+    },
+    {
+      "name": "pi",
+      "displayName": "Raspberry Pi",
+      "description": "Configure Raspberry Pi hardware targets plus portable tools.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-pi",
+      "cacheVariables": {
+        "SPIDER_BUILD_HOST_TOOLS": "ON",
+        "SPIDER_BUILD_PI_TARGETS": "ON",
+        "BUILD_TESTING": "ON"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "host",
+      "displayName": "Build host tools",
+      "configurePreset": "host"
+    },
+    {
+      "name": "host-teleop-keyboard",
+      "displayName": "Build host keyboard teleop client",
+      "configurePreset": "host",
+      "targets": [
+        "spider_teleop_keyboard"
+      ]
+    },
+    {
+      "name": "host-tests",
+      "displayName": "Build host tests",
+      "configurePreset": "host",
+      "targets": [
+        "test_servo_math",
+        "test_motion_command",
+        "test_gait_controller",
+        "test_gait_authoring",
+        "test_gait_examples",
+        "test_semantic_authoring",
+        "test_teleop"
+      ]
+    },
+    {
+      "name": "pi",
+      "displayName": "Build Raspberry Pi targets",
+      "configurePreset": "pi"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "host",
+      "displayName": "Run host tests",
+      "configurePreset": "host",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "pi",
+      "displayName": "Run Raspberry Pi tests",
+      "configurePreset": "pi",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

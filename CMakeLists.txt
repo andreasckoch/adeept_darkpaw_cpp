@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(spider_robot VERSION 0.1.0)
 
+option(SPIDER_BUILD_HOST_TOOLS "Build portable host-side tools" ON)
+option(SPIDER_BUILD_PI_TARGETS "Build Raspberry Pi hardware targets that require pigpio" ON)
+
 # gcc flags
 set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -pthread")
 set(GCC_COVERAGE_LINK_FLAGS "")
@@ -31,6 +34,8 @@ set(SOURCES
     ${ACTUATION_SOURCES}
     ${COMMON_SOURCES}
 )
+
+if(SPIDER_BUILD_PI_TARGETS)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_include_directories(${PROJECT_NAME} PRIVATE inc)
@@ -39,6 +44,7 @@ target_link_libraries(${PROJECT_NAME} pigpio)
 add_executable(spider_diagnostics src/tools/diagnostics_main.cpp)
 target_include_directories(spider_diagnostics PRIVATE inc)
 target_link_libraries(spider_diagnostics pigpio)
+endif()
 
 set(DRY_RUN_SOURCES
     src/gait/motion_command.cpp
@@ -65,6 +71,13 @@ set(SEMANTIC_AUTHORING_SOURCES
     src/actuation/servo_calibration.cpp
 )
 
+set(TELEOP_SOURCES
+    src/streaming/teleop_message.cpp
+    src/teleop/teleop_state.cpp
+    src/teleop/teleop_gait_library.cpp
+)
+
+if(SPIDER_BUILD_HOST_TOOLS)
 add_executable(spider_gait_dry_run
     src/tools/gait_dry_run_main.cpp
     ${DRY_RUN_SOURCES}
@@ -88,7 +101,9 @@ add_executable(spider_replay_gait
     ${GAIT_AUTHORING_SOURCES}
 )
 target_include_directories(spider_replay_gait PRIVATE inc)
+endif()
 
+if(SPIDER_BUILD_PI_TARGETS)
 add_executable(spider_play_gait
     src/tools/gait_play_main.cpp
     ${GAIT_AUTHORING_SOURCES}
@@ -96,7 +111,9 @@ add_executable(spider_play_gait
 )
 target_include_directories(spider_play_gait PRIVATE inc)
 target_link_libraries(spider_play_gait pigpio)
+endif()
 
+if(SPIDER_BUILD_HOST_TOOLS)
 add_executable(spider_validate_semantic_profile
     src/tools/semantic_profile_validate_main.cpp
     src/gait/gait_json.cpp
@@ -126,7 +143,9 @@ add_executable(spider_compile_semantic_gait
     ${SEMANTIC_AUTHORING_SOURCES}
 )
 target_include_directories(spider_compile_semantic_gait PRIVATE inc)
+endif()
 
+if(SPIDER_BUILD_PI_TARGETS)
 add_executable(spider_test_servo
     src/tools/servo_test_main.cpp
     src/actuation/servo_calibration.cpp
@@ -144,7 +163,28 @@ add_executable(spider_test_semantic_joint
 )
 target_include_directories(spider_test_semantic_joint PRIVATE inc)
 target_link_libraries(spider_test_semantic_joint pigpio)
+endif()
 
+if(SPIDER_BUILD_HOST_TOOLS)
+add_executable(spider_teleop_keyboard
+    src/tools/teleop_keyboard_main.cpp
+    src/streaming/teleop_message.cpp
+)
+target_include_directories(spider_teleop_keyboard PRIVATE inc)
+endif()
+
+if(SPIDER_BUILD_PI_TARGETS)
+add_executable(spider_teleop_robot_node
+    src/tools/teleop_robot_node_main.cpp
+    ${TELEOP_SOURCES}
+    ${SEMANTIC_AUTHORING_SOURCES}
+    ${HAL_SOURCES}
+)
+target_include_directories(spider_teleop_robot_node PRIVATE inc)
+target_link_libraries(spider_teleop_robot_node pigpio)
+endif()
+
+if(BUILD_TESTING AND SPIDER_BUILD_HOST_TOOLS)
 add_executable(test_servo_math
     tests/test_servo_math.cpp
     src/actuation/servo_calibration.cpp
@@ -188,6 +228,16 @@ add_executable(test_semantic_authoring
 target_include_directories(test_semantic_authoring PRIVATE inc)
 target_compile_definitions(test_semantic_authoring PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
 add_test(NAME semantic_authoring COMMAND test_semantic_authoring)
+
+add_executable(test_teleop
+    tests/test_teleop.cpp
+    ${TELEOP_SOURCES}
+    ${SEMANTIC_AUTHORING_SOURCES}
+)
+target_include_directories(test_teleop PRIVATE inc)
+target_compile_definitions(test_teleop PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+add_test(NAME teleop COMMAND test_teleop)
+endif()
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")
