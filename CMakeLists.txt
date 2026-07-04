@@ -65,6 +65,12 @@ set(SEMANTIC_AUTHORING_SOURCES
     src/actuation/servo_calibration.cpp
 )
 
+set(TELEOP_SOURCES
+    src/streaming/teleop_message.cpp
+    src/teleop/teleop_state.cpp
+    src/teleop/teleop_gait_library.cpp
+)
+
 add_executable(spider_gait_dry_run
     src/tools/gait_dry_run_main.cpp
     ${DRY_RUN_SOURCES}
@@ -145,6 +151,21 @@ add_executable(spider_test_semantic_joint
 target_include_directories(spider_test_semantic_joint PRIVATE inc)
 target_link_libraries(spider_test_semantic_joint pigpio)
 
+add_executable(spider_teleop_keyboard
+    src/tools/teleop_keyboard_main.cpp
+    src/streaming/teleop_message.cpp
+)
+target_include_directories(spider_teleop_keyboard PRIVATE inc)
+
+add_executable(spider_teleop_robot_node
+    src/tools/teleop_robot_node_main.cpp
+    ${TELEOP_SOURCES}
+    ${SEMANTIC_AUTHORING_SOURCES}
+    ${HAL_SOURCES}
+)
+target_include_directories(spider_teleop_robot_node PRIVATE inc)
+target_link_libraries(spider_teleop_robot_node pigpio)
+
 add_executable(test_servo_math
     tests/test_servo_math.cpp
     src/actuation/servo_calibration.cpp
@@ -188,6 +209,15 @@ add_executable(test_semantic_authoring
 target_include_directories(test_semantic_authoring PRIVATE inc)
 target_compile_definitions(test_semantic_authoring PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
 add_test(NAME semantic_authoring COMMAND test_semantic_authoring)
+
+add_executable(test_teleop
+    tests/test_teleop.cpp
+    ${TELEOP_SOURCES}
+    ${SEMANTIC_AUTHORING_SOURCES}
+)
+target_include_directories(test_teleop PRIVATE inc)
+target_compile_definitions(test_teleop PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
+add_test(NAME teleop COMMAND test_teleop)
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")
 set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}")

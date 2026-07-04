@@ -118,6 +118,37 @@ scripts/run_semantic_gait_on_robot.sh examples/semantic/gaits/slow_forward_creep
 See [semantic leg authoring](docs/semantic_leg_authoring.md) for the profile,
 pose, and gait JSON schemas and the calibration workflow.
 
+## Keyboard teleop streaming
+
+The first streaming control path sends high-level movement intent over UDP. It
+does not stream raw servo pulses from the client. The robot node validates
+packets, rejects repeated sequence IDs, stops on watchdog timeout, transitions
+through neutral when movement type changes, and chooses a built-in semantic gait
+loop for each movement.
+
+Start the Pi-side receiver in dry-run mode:
+
+```bash
+scripts/run_teleop_robot_node.sh
+```
+
+From the Mac or Steam Deck-like Linux client, stream keyboard intent:
+
+```bash
+scripts/run_teleop_keyboard.sh --host <robot-ip>
+```
+
+Controls are `W/A/S/D` for forward/left/backward/right and `Q/E` for left/right
+rotation. Space streams stop and `X` sends e-stop. Hardware movement remains
+explicit:
+
+```bash
+sudo scripts/run_teleop_robot_node.sh --execute
+```
+
+See [teleop streaming](docs/teleop_streaming.md) for packet format, safety
+states, and the Steam Deck/gamepad expansion path.
+
 ## Legacy Raw Gait Authoring
 
 Hand-designed gaits are authored as JSON poses and JSON gait definitions, then compiled into CSV trajectories. Validation, compilation, and replay are hardware-free: they do not read actual servo position, open pigpio, use I2C, or command servos.
@@ -245,5 +276,7 @@ ctest --test-dir build --output-on-failure
 - `src/hal`: low-level pigpio/I2C access, PCA9685 register writes, PWM frequency setup, and pulse-width conversion helpers.
 - `src/actuation`: per-servo pulse limits, semantic leg-profile mapping, clamping, and the current servo pulse API built on top of the PCA9685 HAL.
 - `src/gait`: hardware-free motion commands, raw and semantic JSON authoring, semantic pose resolution, validation, CSV trajectory compilation, and replay support.
-- `src/tools`: executable entry points for diagnostics, dry-run gait, semantic profile/pose/gait tooling, playback, and the current spider robot prototype.
+- `src/streaming`: message serialization and parsing for network control streams.
+- `src/teleop`: hardware-free teleop state, safety transitions, and built-in semantic movement-loop generation.
+- `src/tools`: executable entry points for diagnostics, dry-run gait, semantic profile/pose/gait tooling, playback, teleop, and the current spider robot prototype.
 - `src/common`: shared small utilities.
