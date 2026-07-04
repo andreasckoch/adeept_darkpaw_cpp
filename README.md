@@ -31,6 +31,23 @@ cmake -S . -B build
 cmake --build build
 ```
 
+For a Mac or other host machine that only needs portable tools such as the
+keyboard teleop client and unit tests, use the host preset. It disables all
+Raspberry Pi targets that require `pigpio`:
+
+```bash
+cmake --preset host
+cmake --build --preset host-teleop-keyboard
+ctest --preset host
+```
+
+On the Raspberry Pi, use the Pi preset to include hardware targets:
+
+```bash
+cmake --preset pi
+cmake --build --preset pi
+```
+
 ## Hardware diagnostics
 
 Before running any motion code, run the read-only diagnostics executable:
