@@ -1,0 +1,8 @@
+{
+  "name": "diagonal_a_lift",
+  "description": "Lift front-left and rear-right together while retaining all other semantic neutral targets.",
+  "base": "neutral_stand",
+  "targets": [
+    { "legs": ["front_left", "rear_right"], "axis": "lift", "position": "up" }
+  ]
+}

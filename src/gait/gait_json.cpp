@@ -203,3 +203,63 @@ std::vector<std::string> gait_json_get_object_array(const std::string &json, con
 
     return objects;
 }
+
+std::vector<std::string> gait_json_get_string_array(const std::string &json, const std::string &field)
+{
+    std::vector<std::string> values;
+    size_t start = 0;
+    size_t end = 0;
+    if (!extract_array_bounds(json, field, &start, &end))
+    {
+        return values;
+    }
+
+    size_t pos = start;
+    while (pos < end)
+    {
+        pos = skip_ws(json, pos);
+        if (pos >= end)
+        {
+            break;
+        }
+        if (json[pos] == ',')
+        {
+            pos++;
+            continue;
+        }
+        if (json[pos] != '"')
+        {
+            values.clear();
+            return values;
+        }
+
+        pos++;
+        std::string value;
+        bool complete = false;
+        while (pos < end)
+        {
+            char c = json[pos++];
+            if (c == '"')
+            {
+                complete = true;
+                break;
+            }
+            if (c == '\\' && pos < end)
+            {
+                value.push_back(json[pos++]);
+            }
+            else
+            {
+                value.push_back(c);
+            }
+        }
+        if (!complete)
+        {
+            values.clear();
+            return values;
+        }
+        values.push_back(value);
+    }
+
+    return values;
+}

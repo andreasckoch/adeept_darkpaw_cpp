@@ -1,0 +1,8 @@
+{
+  "name": "hold_neutral",
+  "description": "Hold the resolved semantic neutral pose.",
+  "initial_pose": "neutral_stand",
+  "phases": [
+    { "name": "hold", "pose": "neutral_stand", "duration_ms": 1000, "steps": 10 }
+  ]
+}

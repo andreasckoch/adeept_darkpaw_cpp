@@ -17,6 +17,16 @@ struct GaitTrajectorySample
     int ticks;
 };
 
+bool gait_append_pose_transition(const GaitPose &from_pose,
+                                 const GaitPose &to_pose,
+                                 const std::string &phase_name,
+                                 int duration_ms,
+                                 int steps,
+                                 int start_ms,
+                                 int max_delta_microsec,
+                                 std::vector<GaitTrajectorySample> *samples,
+                                 std::string *error);
+
 bool gait_compile_trajectory(const GaitDefinition &definition,
                              const std::string &poses_dir,
                              int max_delta_microsec,

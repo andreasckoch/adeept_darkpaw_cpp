@@ -1,0 +1,8 @@
+{
+  "name": "crouch",
+  "description": "Neutral stand with all leg-lift joints at their calibrated down semantic position.",
+  "base": "neutral_stand",
+  "targets": [
+    { "legs": ["front_left", "front_right", "rear_left", "rear_right"], "axis": "lift", "position": "down" }
+  ]
+}

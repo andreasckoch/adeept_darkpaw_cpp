@@ -1,0 +1,8 @@
+{
+  "name": "diagonal_a_place",
+  "description": "Return the first diagonal lift joints to neutral after its forward semantic target.",
+  "base": "diagonal_a_forward",
+  "targets": [
+    { "legs": ["front_left", "rear_right"], "axis": "lift", "position": "neutral" }
+  ]
+}

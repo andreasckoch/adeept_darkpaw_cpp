@@ -8,7 +8,7 @@ Usage: scripts/run_pose_on_robot.sh --pose POSE.json [options]
 Options:
   --pose POSE         Pose file path, pose filename, or pose name without .json.
   --execute           Actually command the PCA9685 via spider_play_gait.
-  --poses DIR         Pose directory. Default: examples/poses, or the pose file directory.
+  --poses DIR         Legacy raw pose directory. Default: examples/poses_old, or the pose file directory.
   --output-dir DIR    Compiled CSV directory. Default: data/gaits
   --build-dir DIR     Build directory. Default: build
   --speed SCALE       Playback speed scale, 0 < SCALE <= 1. Default: 0.10
@@ -33,7 +33,7 @@ require_positive_int() {
 }
 
 pose_arg=""
-poses_dir="examples/poses"
+poses_dir="examples/poses_old"
 poses_dir_explicit="0"
 output_dir="data/gaits"
 build_dir="build"

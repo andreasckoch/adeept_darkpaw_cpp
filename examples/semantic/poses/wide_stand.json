@@ -1,0 +1,8 @@
+{
+  "name": "wide_stand",
+  "description": "Neutral stand with every foot moved outward in the body frame.",
+  "base": "neutral_stand",
+  "targets": [
+    { "legs": ["front_left", "front_right", "rear_left", "rear_right"], "axis": "stance", "position": "wide" }
+  ]
+}

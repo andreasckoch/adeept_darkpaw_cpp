@@ -1,0 +1,14 @@
+{
+  "name": "slow_backward_creep",
+  "description": "Seed diagonal backward creep using concurrent semantic joint targets.",
+  "initial_pose": "neutral_stand",
+  "phases": [
+    { "name": "a_lift", "targets": [ { "legs": ["front_left", "rear_right"], "axis": "lift", "position": "up" } ], "duration_ms": 80, "steps": 32 },
+    { "name": "a_backward", "targets": [ { "legs": ["front_left", "rear_right"], "axis": "fore_aft", "position": "back" }, { "legs": ["front_right", "rear_left"], "axis": "fore_aft", "position": "front" } ], "duration_ms": 100, "steps": 32 },
+    { "name": "a_place", "targets": [ { "legs": ["front_left", "rear_right"], "axis": "lift", "position": "neutral" } ], "duration_ms": 80, "steps": 32 },
+    { "name": "b_lift", "targets": [ { "legs": ["front_right", "rear_left"], "axis": "lift", "position": "up" } ], "duration_ms": 80, "steps": 32 },
+    { "name": "b_backward", "targets": [ { "legs": ["front_right", "rear_left"], "axis": "fore_aft", "position": "back" }, { "legs": ["front_left", "rear_right"], "axis": "fore_aft", "position": "front" } ], "duration_ms": 100, "steps": 32 },
+    { "name": "b_place", "targets": [ { "legs": ["front_right", "rear_left"], "axis": "lift", "position": "neutral" } ], "duration_ms": 80, "steps": 32 },
+    { "name": "neutral", "pose": "neutral_stand", "duration_ms": 100, "steps": 32 }
+  ]
+}

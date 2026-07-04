@@ -1,0 +1,9 @@
+{
+  "name": "diagonal_a_forward",
+  "description": "Advance the lifted diagonal while the supporting diagonal moves backward in the body frame.",
+  "base": "diagonal_a_lift",
+  "targets": [
+    { "legs": ["front_left", "rear_right"], "axis": "fore_aft", "position": "front" },
+    { "legs": ["front_right", "rear_left"], "axis": "fore_aft", "position": "back" }
+  ]
+}
