@@ -15,6 +15,20 @@
       "cacheVariables": {
         "SPIDER_BUILD_HOST_TOOLS": "ON",
         "SPIDER_BUILD_PI_TARGETS": "OFF",
+        "SPIDER_BUILD_DESKTOP_APP": "OFF",
+        "BUILD_TESTING": "ON"
+      }
+    },
+    {
+      "name": "host-desktop-viewer",
+      "displayName": "Host desktop viewer",
+      "description": "Configure portable host tools, telemetry tests, and the browser-based desktop viewer helper target.",
+      "generator": "Unix Makefiles",
+      "binaryDir": "${sourceDir}/build-host-viewer",
+      "cacheVariables": {
+        "SPIDER_BUILD_HOST_TOOLS": "ON",
+        "SPIDER_BUILD_PI_TARGETS": "OFF",
+        "SPIDER_BUILD_DESKTOP_APP": "ON",
         "BUILD_TESTING": "ON"
       }
     },
@@ -27,6 +41,7 @@
       "cacheVariables": {
         "SPIDER_BUILD_HOST_TOOLS": "ON",
         "SPIDER_BUILD_PI_TARGETS": "ON",
+        "SPIDER_BUILD_DESKTOP_APP": "OFF",
         "BUILD_TESTING": "ON"
       }
     }
@@ -56,13 +71,31 @@
         "test_gait_authoring",
         "test_gait_examples",
         "test_semantic_authoring",
-        "test_teleop"
+        "test_teleop",
+        "test_sensor_telemetry"
+      ]
+    },
+    {
+      "name": "host-desktop-viewer",
+      "displayName": "Build desktop viewer helper target",
+      "configurePreset": "host-desktop-viewer",
+      "targets": [
+        "spider_viewer",
+        "spider_sensor_telemetry_mock"
       ]
     },
     {
       "name": "pi",
       "displayName": "Build Raspberry Pi targets",
       "configurePreset": "pi"
+    },
+    {
+      "name": "pi-sensor-streamer",
+      "displayName": "Build Raspberry Pi sensor streamer",
+      "configurePreset": "pi",
+      "targets": [
+        "spider_sensor_streamer"
+      ]
     }
   ],
   "testPresets": [

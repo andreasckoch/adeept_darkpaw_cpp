@@ -3,6 +3,7 @@ project(spider_robot VERSION 0.1.0)
 
 option(SPIDER_BUILD_HOST_TOOLS "Build portable host-side tools" ON)
 option(SPIDER_BUILD_PI_TARGETS "Build Raspberry Pi hardware targets that require pigpio" ON)
+option(SPIDER_BUILD_DESKTOP_APP "Enable desktop viewer helper targets" OFF)
 
 # gcc flags
 set(GCC_COVERAGE_COMPILE_FLAGS "-Wall -pthread")
@@ -75,6 +76,11 @@ set(TELEOP_SOURCES
     src/streaming/teleop_message.cpp
     src/teleop/teleop_state.cpp
     src/teleop/teleop_gait_library.cpp
+)
+
+set(SENSOR_TELEMETRY_SOURCES
+    src/messages/sensor_telemetry.cpp
+    src/telemetry/telemetry_series.cpp
 )
 
 if(SPIDER_BUILD_HOST_TOOLS)
@@ -171,6 +177,30 @@ add_executable(spider_teleop_keyboard
     src/streaming/teleop_message.cpp
 )
 target_include_directories(spider_teleop_keyboard PRIVATE inc)
+
+add_executable(spider_sensor_telemetry_mock
+    src/tools/sensor_telemetry_mock_main.cpp
+    src/messages/sensor_telemetry.cpp
+)
+target_include_directories(spider_sensor_telemetry_mock PRIVATE inc)
+
+add_executable(spider_sensor_streamer
+    src/tools/sensor_streamer_main.cpp
+    src/messages/sensor_telemetry.cpp
+)
+target_include_directories(spider_sensor_streamer PRIVATE inc)
+
+if(SPIDER_BUILD_DESKTOP_APP)
+add_custom_target(spider_viewer
+    COMMAND ${CMAKE_COMMAND} -E echo "Run: python3 ${CMAKE_CURRENT_SOURCE_DIR}/desktop/spider_viewer/spider_viewer_server.py --open"
+    SOURCES
+        desktop/spider_viewer/README.md
+        desktop/spider_viewer/index.html
+        desktop/spider_viewer/styles.css
+        desktop/spider_viewer/viewer.js
+        desktop/spider_viewer/spider_viewer_server.py
+)
+endif()
 endif()
 
 if(SPIDER_BUILD_PI_TARGETS)
@@ -237,6 +267,13 @@ add_executable(test_teleop
 target_include_directories(test_teleop PRIVATE inc)
 target_compile_definitions(test_teleop PRIVATE REPO_ROOT="${CMAKE_CURRENT_SOURCE_DIR}")
 add_test(NAME teleop COMMAND test_teleop)
+
+add_executable(test_sensor_telemetry
+    tests/test_sensor_telemetry.cpp
+    ${SENSOR_TELEMETRY_SOURCES}
+)
+target_include_directories(test_sensor_telemetry PRIVATE inc)
+add_test(NAME sensor_telemetry COMMAND test_sensor_telemetry)
 endif()
 
 set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}")

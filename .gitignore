@@ -1,6 +1,9 @@
 .vscode/
+__pycache__/
+*.pyc
 build/
 build-host/
+build-host-viewer/
 build-pi/
 AGENTS.md
 data/gaits/*.csv

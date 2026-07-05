@@ -48,6 +48,13 @@ cmake --preset pi
 cmake --build --preset pi
 ```
 
+For the desktop telemetry viewer helper target:
+
+```bash
+cmake --preset host-desktop-viewer
+cmake --build --preset host-desktop-viewer
+```
+
 ## Hardware diagnostics
 
 Before running any motion code, run the read-only diagnostics executable:
@@ -165,6 +172,41 @@ sudo scripts/run_teleop_robot_node.sh --execute
 
 See [teleop streaming](docs/teleop_streaming.md) for packet format, safety
 states, and the Steam Deck/gamepad expansion path.
+
+## Sensor telemetry and desktop viewer
+
+The first sensor-streaming path uses scalar UDP telemetry packets plus a separate
+camera stream. Available telemetry includes heartbeat, camera availability,
+Raspberry Pi CPU temperature, and software/runtime state. IMU, battery, and
+range channels are supported as optional packet names but are reported as
+`unavailable` until a verified hardware reader is added for the exact robot HAT.
+
+Run the Mac-side viewer:
+
+```bash
+python3 desktop/spider_viewer/spider_viewer_server.py --open
+```
+
+Feed it with mock telemetry on the Mac:
+
+```bash
+./build-host/spider_sensor_telemetry_mock --host 127.0.0.1
+```
+
+Or stream available telemetry from the Pi to the Mac:
+
+```bash
+./build-pi/spider_sensor_streamer --host <mac-ip>
+```
+
+Camera transport remains separate:
+
+```bash
+scripts/stream_camera_rpicam.sh --host <mac-ip>
+```
+
+See [sensor streaming](docs/sensor_streaming.md) for availability notes, packet
+format, viewer details, and the optional sensor policy.
 
 ## Legacy Raw Gait Authoring
 

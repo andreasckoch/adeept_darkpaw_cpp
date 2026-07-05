@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Spider Viewer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <section class="video-stage">
+      <img id="video-feed" alt="camera stream">
+      <div id="video-placeholder">
+        <div class="camera-title">Camera Stream</div>
+        <div class="camera-subtitle">Connect an HTTP/WebRTC/GStreamer bridge URL to replace this placeholder.</div>
+      </div>
+      <div class="connection-pill" id="connection-pill">telemetry: waiting</div>
+      <div class="controls-overlay">
+        <div class="row"><kbd>W</kbd></div>
+        <div class="row"><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div>
+        <div class="row"><kbd>Q</kbd><span>rotate</span><kbd>E</kbd></div>
+        <div class="row"><kbd>Space</kbd><span>stop</span><kbd>X</kbd><span>e-stop</span></div>
+      </div>
+    </section>
+    <section class="telemetry-panel">
+      <div class="plot-header">
+        <span>Live Telemetry</span>
+        <span id="packet-info">0 packets</span>
+      </div>
+      <canvas id="telemetry-canvas"></canvas>
+      <div id="latest-values"></div>
+    </section>
+  </main>
+  <script src="viewer.js"></script>
+</body>
+</html>
