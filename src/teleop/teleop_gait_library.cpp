@@ -52,7 +52,6 @@ static std::vector<SemanticTarget> diagonal_targets(const char *lift_a,
                                                    const char *support_fore_aft)
 {
     std::vector<SemanticTarget> targets;
-    targets.push_back(target(lift_a, lift_b, "lift", "up"));
     targets.push_back(target(lift_a, lift_b, "fore_aft", swing_fore_aft));
     if (lift_a == std::string("front_left"))
     {
@@ -71,6 +70,10 @@ static void add_diagonal_creep(SemanticGaitDefinition *definition,
                                const char *support_fore_aft,
                                const std::string &prefix)
 {
+    std::vector<SemanticTarget> a_lift;
+    a_lift.push_back(target("front_left", "rear_right", "lift", "up"));
+    add_phase(definition, prefix + "_a_lift", timing.phase_duration_ms, timing.phase_steps, a_lift);
+
     add_phase(definition,
               prefix + "_a_swing",
               timing.phase_duration_ms,
@@ -81,6 +84,10 @@ static void add_diagonal_creep(SemanticGaitDefinition *definition,
     a_place.push_back(target("front_left", "rear_right", "lift", "down"));
     add_phase(definition, prefix + "_a_place", timing.phase_duration_ms, timing.phase_steps, a_place);
 
+    std::vector<SemanticTarget> b_lift;
+    b_lift.push_back(target("front_right", "rear_left", "lift", "up"));
+    add_phase(definition, prefix + "_b_lift", timing.phase_duration_ms, timing.phase_steps, b_lift);
+    
     add_phase(definition,
               prefix + "_b_swing",
               timing.phase_duration_ms,
@@ -106,8 +113,8 @@ static void add_strafe(SemanticGaitDefinition *definition,
 {
     std::vector<SemanticTarget> a_swing;
     a_swing.push_back(target("front_left", "rear_right", "lift", "up"));
-    a_swing.push_back(target("front_left", "rear_left", "stance", left_stance));
-    a_swing.push_back(target("front_right", "rear_right", "stance", right_stance));
+    a_swing.push_back(target("front_left", "front_right", "stance", left_stance));
+    a_swing.push_back(target("rear_left", "rear_right", "stance", right_stance));
     add_phase(definition, prefix + "_a_swing", timing.phase_duration_ms, timing.phase_steps, a_swing);
 
     std::vector<SemanticTarget> a_place;
@@ -116,8 +123,8 @@ static void add_strafe(SemanticGaitDefinition *definition,
 
     std::vector<SemanticTarget> b_swing;
     b_swing.push_back(target("front_right", "rear_left", "lift", "up"));
-    b_swing.push_back(target("front_left", "rear_left", "stance", left_stance));
-    b_swing.push_back(target("front_right", "rear_right", "stance", right_stance));
+    b_swing.push_back(target("rear_right", "rear_left", "stance", left_stance));
+    b_swing.push_back(target("front_right", "front_left", "stance", right_stance));
     add_phase(definition, prefix + "_b_swing", timing.phase_duration_ms, timing.phase_steps, b_swing);
 
     std::vector<SemanticTarget> b_place;
@@ -133,28 +140,28 @@ static void add_strafe(SemanticGaitDefinition *definition,
 
 static void add_rotation(SemanticGaitDefinition *definition,
                          const TeleopGaitTiming &timing,
-                         const char *left_fore_aft,
-                         const char *right_fore_aft,
+                         const char *fore_aft_1, // back
+                         const char *fore_aft_2, // front
                          const std::string &prefix)
 {
     std::vector<SemanticTarget> left_swing;
-    left_swing.push_back(target("front_left", "rear_left", "lift", "up"));
-    left_swing.push_back(target("front_left", "rear_left", "fore_aft", left_fore_aft));
-    left_swing.push_back(target("front_right", "rear_right", "fore_aft", right_fore_aft));
+    left_swing.push_back(target("front_left", "rear_right", "lift", "up"));
+    left_swing.push_back(target("front_right", "front_left", "fore_aft", fore_aft_1));
+    left_swing.push_back(target("rear_left", "rear_right", "fore_aft", fore_aft_2));
     add_phase(definition, prefix + "_left_swing", timing.phase_duration_ms, timing.phase_steps, left_swing);
 
     std::vector<SemanticTarget> left_place;
-    left_place.push_back(target("front_left", "rear_left", "lift", "down"));
+    left_place.push_back(target("front_left", "rear_right", "lift", "down"));
     add_phase(definition, prefix + "_left_place", timing.phase_duration_ms, timing.phase_steps, left_place);
 
     std::vector<SemanticTarget> right_swing;
-    right_swing.push_back(target("front_right", "rear_right", "lift", "up"));
-    right_swing.push_back(target("front_left", "rear_left", "fore_aft", left_fore_aft));
-    right_swing.push_back(target("front_right", "rear_right", "fore_aft", right_fore_aft));
+    right_swing.push_back(target("front_right", "rear_left", "lift", "up"));
+    right_swing.push_back(target("rear_left", "rear_right", "fore_aft", fore_aft_1));
+    right_swing.push_back(target("front_right", "front_left", "fore_aft", fore_aft_2));
     add_phase(definition, prefix + "_right_swing", timing.phase_duration_ms, timing.phase_steps, right_swing);
 
     std::vector<SemanticTarget> right_place;
-    right_place.push_back(target("front_right", "rear_right", "lift", "down"));
+    right_place.push_back(target("front_right", "rear_left", "lift", "down"));
     add_phase(definition, prefix + "_right_place", timing.phase_duration_ms, timing.phase_steps, right_place);
 
     add_pose_phase(definition,

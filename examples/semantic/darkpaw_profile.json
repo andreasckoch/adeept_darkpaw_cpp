@@ -70,7 +70,7 @@
           "positions": [
             {
               "name": "back",
-              "pulse_microsec": 380
+              "pulse_microsec": 1800
             },
             {
               "name": "neutral",
@@ -78,7 +78,7 @@
             },
             {
               "name": "front",
-              "pulse_microsec": 1800
+              "pulse_microsec": 380
             }
           ]
         },
