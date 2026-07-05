@@ -16,6 +16,33 @@ static std::string join_path(const std::string &left, const std::string &right)
     return left + "/" + right;
 }
 
+static size_t loop_restart_frame(const std::vector<GaitTrajectorySample> &samples)
+{
+    std::string first_phase = samples[0].phase;
+    size_t restart_frame = 0;
+    for (size_t frame_start = 0; frame_start < samples.size(); frame_start += SERVO_COUNT)
+    {
+        if (samples[frame_start].phase != first_phase)
+        {
+            break;
+        }
+        restart_frame = frame_start;
+    }
+    return restart_frame;
+}
+
+static void assert_frames_match(const std::vector<GaitTrajectorySample> &samples,
+                                size_t left_frame,
+                                size_t right_frame)
+{
+    for (int i = 0; i < SERVO_COUNT; i++)
+    {
+        assert(samples[left_frame + i].channel == samples[right_frame + i].channel);
+        assert(samples[left_frame + i].pulse_microsec == samples[right_frame + i].pulse_microsec);
+        assert(samples[left_frame + i].ticks == samples[right_frame + i].ticks);
+    }
+}
+
 static void test_key_mapping_and_packet_roundtrip()
 {
     TeleopMovementType movement = TELEOP_MOVEMENT_STOP;
@@ -148,10 +175,18 @@ static void test_builtin_gaits_compile()
 
     for (size_t i = 0; i < sizeof(movements) / sizeof(movements[0]); i++)
     {
+        SemanticGaitDefinition definition;
+        assert(teleop_gait_build_definition(movements[i], timing, &definition, &error));
+        for (size_t phase_index = 0; phase_index < definition.phases.size(); phase_index++)
+        {
+            assert(definition.phases[phase_index].target_pose.empty());
+        }
+
         std::vector<GaitTrajectorySample> samples;
         assert(teleop_gait_compile_loop(movements[i], profile, poses_dir, timing, &samples, &error));
         assert(gait_validate_trajectory(samples, timing.max_delta_microsec, &error));
         assert(samples.size() >= SERVO_COUNT);
+        assert_frames_match(samples, samples.size() - SERVO_COUNT, loop_restart_frame(samples));
     }
 }
 

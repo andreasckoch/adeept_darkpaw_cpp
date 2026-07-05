@@ -225,6 +225,77 @@ static uint64_t scaled_frame_delay_ms(const std::vector<GaitTrajectorySample> &s
     return scaled == 0 ? 1 : scaled;
 }
 
+static size_t loop_restart_frame(const std::vector<GaitTrajectorySample> &samples)
+{
+    if (samples.empty())
+    {
+        return 0;
+    }
+
+    std::string first_phase = samples[0].phase;
+    size_t restart_frame = 0;
+    for (size_t frame_start = 0; frame_start < samples.size(); frame_start += SERVO_COUNT)
+    {
+        if (samples[frame_start].phase != first_phase)
+        {
+            break;
+        }
+        restart_frame = frame_start;
+    }
+    return restart_frame;
+}
+
+static bool frame_to_pose(const std::vector<GaitTrajectorySample> &samples,
+                          size_t frame_start,
+                          const std::string &name,
+                          GaitPose *pose,
+                          std::string *error)
+{
+    if (pose == 0 || frame_start + SERVO_COUNT > samples.size())
+    {
+        if (error != 0) { *error = "cannot convert incomplete trajectory frame to pose"; }
+        return false;
+    }
+
+    gait_pose_init(pose);
+    pose->name = name;
+    for (int i = 0; i < SERVO_COUNT; i++)
+    {
+        const GaitTrajectorySample &sample = samples[frame_start + i];
+        if (!servo_is_valid_index(sample.channel))
+        {
+            if (error != 0) { *error = "trajectory frame contains invalid servo channel"; }
+            return false;
+        }
+        pose->channel_present[sample.channel] = true;
+        pose->pulse_microsec[sample.channel] = sample.pulse_microsec;
+    }
+    return gait_pose_validate(*pose, error);
+}
+
+static bool build_neutral_return(const GaitPose &current_pose,
+                                 const GaitPose &neutral_pose,
+                                 const TeleopGaitTiming &timing,
+                                 std::vector<GaitTrajectorySample> *samples,
+                                 std::string *error)
+{
+    if (samples == 0)
+    {
+        if (error != 0) { *error = "neutral return samples output is null"; }
+        return false;
+    }
+    samples->clear();
+    return gait_append_pose_transition(current_pose,
+                                       neutral_pose,
+                                       "return_neutral",
+                                       timing.phase_duration_ms,
+                                       timing.phase_steps * 2,
+                                       0,
+                                       timing.max_delta_microsec,
+                                       samples,
+                                       error);
+}
+
 int main(int argc, char **argv)
 {
     RobotNodeOptions options;
@@ -239,6 +310,13 @@ int main(int argc, char **argv)
     if (!semantic_profile_load_json(options.profile_path, &profile, &error))
     {
         fprintf(stderr, "Invalid semantic profile: %s\n", error.c_str());
+        return 1;
+    }
+
+    GaitPose neutral_pose;
+    if (!semantic_pose_resolve(profile, options.poses_dir, "neutral_stand", &neutral_pose, &error))
+    {
+        fprintf(stderr, "Failed to resolve neutral_stand: %s\n", error.c_str());
         return 1;
     }
 
@@ -276,6 +354,12 @@ int main(int argc, char **argv)
     size_t playback_frame = 0;
     uint64_t next_frame_ms = 0;
     uint64_t next_print_ms = 0;
+    TeleopGaitTiming timing = teleop_gait_default_timing();
+    GaitPose last_commanded_pose = neutral_pose;
+    std::vector<GaitTrajectorySample> neutral_return_samples;
+    bool neutral_return_active = false;
+    size_t neutral_return_frame = 0;
+    uint64_t next_neutral_frame_ms = 0;
 
     printf("Teleop robot node listening on %s:%d\n", options.bind_address.c_str(), options.port);
     printf("Mode: %s\n", options.execute ? "EXECUTE" : "dry run; no hardware will be commanded");
@@ -332,8 +416,69 @@ int main(int argc, char **argv)
         now = now_ms();
         teleop_state_tick(&state, now);
         const std::vector<GaitTrajectorySample> *active_loop = find_loop(loops, state.active_movement);
-        if (active_loop == 0)
+        if (neutral_return_active)
         {
+            if (now >= next_neutral_frame_ms)
+            {
+                const GaitTrajectorySample &frame = neutral_return_samples[neutral_return_frame];
+                if (options.execute && !write_frame(&device, neutral_return_samples, neutral_return_frame))
+                {
+                    break;
+                }
+                if (!frame_to_pose(neutral_return_samples,
+                                   neutral_return_frame,
+                                   "last_commanded",
+                                   &last_commanded_pose,
+                                   &error))
+                {
+                    fprintf(stderr, "Failed to track neutral return frame: %s\n", error.c_str());
+                    break;
+                }
+                if (!options.execute && now >= next_print_ms)
+                {
+                    printf("dry-run active=stop phase=%s step=%d speed=%.2f state=%s safety=%s\n",
+                           frame.phase.c_str(),
+                           frame.step,
+                           state.speed_scale,
+                           teleop_run_state_to_string(state.run_state).c_str(),
+                           teleop_safety_state_to_string(state.safety_state).c_str());
+                    next_print_ms = now + 500;
+                }
+
+                uint64_t delay_ms = scaled_frame_delay_ms(neutral_return_samples,
+                                                          neutral_return_frame,
+                                                          state.speed_scale);
+                neutral_return_frame += SERVO_COUNT;
+                if (neutral_return_frame >= neutral_return_samples.size())
+                {
+                    neutral_return_active = false;
+                    neutral_return_frame = 0;
+                    next_neutral_frame_ms = 0;
+                    last_commanded_pose = neutral_pose;
+                }
+                else
+                {
+                    next_neutral_frame_ms = now + delay_ms;
+                }
+            }
+        }
+        else if (active_loop == 0)
+        {
+            if (playback_movement != TELEOP_MOVEMENT_STOP)
+            {
+                if (!build_neutral_return(last_commanded_pose,
+                                          neutral_pose,
+                                          timing,
+                                          &neutral_return_samples,
+                                          &error))
+                {
+                    fprintf(stderr, "Failed to build neutral return: %s\n", error.c_str());
+                    break;
+                }
+                neutral_return_active = true;
+                neutral_return_frame = 0;
+                next_neutral_frame_ms = now;
+            }
             playback_movement = TELEOP_MOVEMENT_STOP;
             playback_frame = 0;
             next_frame_ms = 0;
@@ -354,6 +499,15 @@ int main(int argc, char **argv)
                 {
                     break;
                 }
+                if (!frame_to_pose(*active_loop,
+                                   playback_frame,
+                                   "last_commanded",
+                                   &last_commanded_pose,
+                                   &error))
+                {
+                    fprintf(stderr, "Failed to track active teleop frame: %s\n", error.c_str());
+                    break;
+                }
                 if (!options.execute && now >= next_print_ms)
                 {
                     printf("dry-run active=%s phase=%s step=%d speed=%.2f state=%s safety=%s\n",
@@ -370,7 +524,7 @@ int main(int argc, char **argv)
                 playback_frame += SERVO_COUNT;
                 if (playback_frame >= active_loop->size())
                 {
-                    playback_frame = 0;
+                    playback_frame = loop_restart_frame(*active_loop);
                 }
                 next_frame_ms = now + delay_ms;
             }
