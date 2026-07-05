@@ -225,6 +225,26 @@ static uint64_t scaled_frame_delay_ms(const std::vector<GaitTrajectorySample> &s
     return scaled == 0 ? 1 : scaled;
 }
 
+static size_t loop_restart_frame(const std::vector<GaitTrajectorySample> &samples)
+{
+    if (samples.empty())
+    {
+        return 0;
+    }
+
+    std::string first_phase = samples[0].phase;
+    size_t restart_frame = 0;
+    for (size_t frame_start = 0; frame_start < samples.size(); frame_start += SERVO_COUNT)
+    {
+        if (samples[frame_start].phase != first_phase)
+        {
+            break;
+        }
+        restart_frame = frame_start;
+    }
+    return restart_frame;
+}
+
 static bool frame_to_pose(const std::vector<GaitTrajectorySample> &samples,
                           size_t frame_start,
                           const std::string &name,
@@ -504,7 +524,7 @@ int main(int argc, char **argv)
                 playback_frame += SERVO_COUNT;
                 if (playback_frame >= active_loop->size())
                 {
-                    playback_frame = 0;
+                    playback_frame = loop_restart_frame(*active_loop);
                 }
                 next_frame_ms = now + delay_ms;
             }

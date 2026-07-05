@@ -48,6 +48,12 @@ static std::vector<SemanticTarget> diagonal_targets(const char *lift_a,
     return targets;
 }
 
+static void add_all_fore_aft(std::vector<SemanticTarget> *targets, const char *position)
+{
+    targets->push_back(target("front_left", "rear_right", "fore_aft", position));
+    targets->push_back(target("front_right", "rear_left", "fore_aft", position));
+}
+
 static void add_diagonal_creep(SemanticGaitDefinition *definition,
                                const TeleopGaitTiming &timing,
                                const char *swing_fore_aft,
@@ -81,6 +87,12 @@ static void add_diagonal_creep(SemanticGaitDefinition *definition,
     std::vector<SemanticTarget> b_place;
     b_place.push_back(target("front_right", "rear_left", "lift", "down"));
     add_phase(definition, prefix + "_b_place", timing.phase_duration_ms, timing.phase_steps, b_place);
+
+    std::vector<SemanticTarget> prepare_a_lift;
+    prepare_a_lift.push_back(target("front_left", "rear_right", "lift", "up"));
+    prepare_a_lift.push_back(target("front_right", "rear_left", "lift", "neutral"));
+    add_all_fore_aft(&prepare_a_lift, "neutral");
+    add_phase(definition, prefix + "_prepare_a_lift", timing.phase_duration_ms, timing.phase_steps, prepare_a_lift);
 }
 
 static void add_strafe(SemanticGaitDefinition *definition,
@@ -108,6 +120,13 @@ static void add_strafe(SemanticGaitDefinition *definition,
     std::vector<SemanticTarget> b_place;
     b_place.push_back(target("front_right", "rear_left", "lift", "down"));
     add_phase(definition, prefix + "_b_place", timing.phase_duration_ms, timing.phase_steps, b_place);
+
+    std::vector<SemanticTarget> prepare_a_swing;
+    prepare_a_swing.push_back(target("front_left", "rear_right", "lift", "up"));
+    prepare_a_swing.push_back(target("front_right", "rear_left", "lift", "neutral"));
+    prepare_a_swing.push_back(target("front_left", "front_right", "stance", stance_1));
+    prepare_a_swing.push_back(target("rear_left", "rear_right", "stance", stance_2));
+    add_phase(definition, prefix + "_prepare_a_swing", timing.phase_duration_ms, timing.phase_steps, prepare_a_swing);
 }
 
 static void add_rotation(SemanticGaitDefinition *definition,
@@ -145,6 +164,13 @@ static void add_rotation(SemanticGaitDefinition *definition,
         a_put_2.push_back(target("front_right", "rear_left", "lift", "neutral"));
         add_phase(definition, prefix + "_a_put_2", timing.phase_duration_ms, timing.phase_steps, a_put_2);
     }
+
+    std::vector<SemanticTarget> prepare_a_rotate;
+    prepare_a_rotate.push_back(target("front_left", "rear_right", "lift", "neutral"));
+    prepare_a_rotate.push_back(target("front_right", "rear_left", "lift", "neutral"));
+    prepare_a_rotate.push_back(target("front_right", "rear_right", "fore_aft", fore_aft_1));
+    prepare_a_rotate.push_back(target("rear_left", "front_left", "fore_aft", fore_aft_2));
+    add_phase(definition, prefix + "_prepare_a_rotate", timing.phase_duration_ms, timing.phase_steps, prepare_a_rotate);
 }
 
 TeleopGaitTiming teleop_gait_default_timing()
