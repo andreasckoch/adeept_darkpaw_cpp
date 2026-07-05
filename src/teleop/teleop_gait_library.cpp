@@ -1,7 +1,5 @@
 #include "teleop_gait_library.h"
 
-#include <sstream>
-
 static SemanticTarget target(const char *leg_a,
                              const char *leg_b,
                              const char *axis,
@@ -29,20 +27,6 @@ static void add_phase(SemanticGaitDefinition *definition,
     phase.duration_ms = duration_ms;
     phase.steps = steps;
     phase.targets = targets;
-    definition->phases.push_back(phase);
-}
-
-static void add_pose_phase(SemanticGaitDefinition *definition,
-                           const std::string &name,
-                           const std::string &pose,
-                           int duration_ms,
-                           int steps)
-{
-    SemanticGaitPhase phase;
-    phase.name = name;
-    phase.duration_ms = duration_ms;
-    phase.steps = steps;
-    phase.target_pose = pose;
     definition->phases.push_back(phase);
 }
 
@@ -97,12 +81,6 @@ static void add_diagonal_creep(SemanticGaitDefinition *definition,
     std::vector<SemanticTarget> b_place;
     b_place.push_back(target("front_right", "rear_left", "lift", "down"));
     add_phase(definition, prefix + "_b_place", timing.phase_duration_ms, timing.phase_steps, b_place);
-
-    add_pose_phase(definition,
-                   prefix + "_recenter",
-                   "neutral_stand",
-                   timing.phase_duration_ms,
-                   timing.phase_steps);
 }
 
 static void add_strafe(SemanticGaitDefinition *definition,
@@ -130,12 +108,6 @@ static void add_strafe(SemanticGaitDefinition *definition,
     std::vector<SemanticTarget> b_place;
     b_place.push_back(target("front_right", "rear_left", "lift", "down"));
     add_phase(definition, prefix + "_b_place", timing.phase_duration_ms, timing.phase_steps, b_place);
-
-    add_pose_phase(definition,
-                   prefix + "_recenter",
-                   "neutral_stand",
-                   timing.phase_duration_ms,
-                   timing.phase_steps);
 }
 
 static void add_rotation(SemanticGaitDefinition *definition,
@@ -173,12 +145,6 @@ static void add_rotation(SemanticGaitDefinition *definition,
         a_put_2.push_back(target("front_right", "rear_left", "lift", "neutral"));
         add_phase(definition, prefix + "_a_put_2", timing.phase_duration_ms, timing.phase_steps, a_put_2);
     }
-
-    add_pose_phase(definition,
-                   prefix + "_recenter",
-                   "neutral_stand",
-                   timing.phase_duration_ms,
-                   timing.phase_steps);
 }
 
 TeleopGaitTiming teleop_gait_default_timing()

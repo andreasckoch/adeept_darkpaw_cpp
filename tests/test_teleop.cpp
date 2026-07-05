@@ -148,6 +148,13 @@ static void test_builtin_gaits_compile()
 
     for (size_t i = 0; i < sizeof(movements) / sizeof(movements[0]); i++)
     {
+        SemanticGaitDefinition definition;
+        assert(teleop_gait_build_definition(movements[i], timing, &definition, &error));
+        for (size_t phase_index = 0; phase_index < definition.phases.size(); phase_index++)
+        {
+            assert(definition.phases[phase_index].target_pose.empty());
+        }
+
         std::vector<GaitTrajectorySample> samples;
         assert(teleop_gait_compile_loop(movements[i], profile, poses_dir, timing, &samples, &error));
         assert(gait_validate_trajectory(samples, timing.max_delta_microsec, &error));
